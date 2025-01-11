@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Group</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <p
+    class="ion-text-center ion-margin-horizontal ion-margin-vertical"
+    style="font-size: 1.2rem; color: #555"
+  >
+    You are all settled up!
+  </p>
+  <div *ngIf="listOfGroup.length === 0; else friendsList">
+    <div class="empty-state">
+      <div style="text-align: center" *ngIf="listOfGroup.length === 0">
+        <img
+          width="250"
+          style="max-width: 100%; margin: 0 auto"
+          src="https://img.freepik.com/free-vector/utility-bills-concept-illustration_114360-15641.jpg?t=st=1732876999~exp=1732880599~hmac=c4d018cb6fc5346e58dd739a39b717fdf787c5d9a0df542a4081885b39ac2ecb&w=740"
+          alt="No Groups"
+        />
+      </div>
+      <div style="text-align: center">
+        <ion-button fill="outline" (click)="createGroup()" color="voilet">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Add Groups
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #friendsList>
+    <div class="friends-list">
+      <ion-list>
+        <ion-item
+          *ngFor="let group of listOfGroup"
+          class="ion-margin-vertical"
+          (click)="viewGroup(group?._id)"
+        >
+          <ion-avatar
+            slot="start"
+            style="
+              width: 70px;
+              height: 70px;
+              border-radius: 50%;
+              object-fit: cover;
+            "
+          >
+            <img [src]="getAvatar(group)" alt="Group Image" />
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ group?.groupName }}</h2>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createGroup()" color="tertiary">
+      <ion-icon name="person-add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

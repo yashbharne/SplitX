@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/expenses"
+        (click)="goBack()"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ getTitle() }}</ion-title>
+    <ion-buttons slot="end" *ngIf="currentView !== 'main'">
+      <ion-button (click)="confirmSelection()">
+        <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Main View -->
+  <div *ngIf="currentView === 'main'">
+    <ion-item>
+      <ion-label position="stacked">Description</ion-label>
+      <ion-input
+        placeholder="Enter a description"
+        name="description"
+        [(ngModel)]="description"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Amount</ion-label>
+      <ion-input
+        type="number"
+        placeholder="0.00"
+        name="amount"
+        [(ngModel)]="amount"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item (click)="showPaidByView()">
+      <ion-label>Paid by</ion-label>
+      <ion-note slot="end">{{ getPaidByText() }}</ion-note>
+    </ion-item>
+
+    <ion-item (click)="showSplitView()">
+      <ion-label>Split</ion-label>
+      <ion-note slot="end">{{ splitType }}</ion-note>
+    </ion-item>
+
+    <ion-button expand="block" (click)="addExpense()">Add Expense</ion-button>
+  </div>
+
+  <!-- Paid By View -->
+  <div *ngIf="currentView === 'paidBy'">
+    <ion-radio-group [(ngModel)]="selectedPayer" *ngIf="!isMultiplePayers">
+      <ion-item *ngFor="let member of groupMembers">
+        <!-- <ion-avatar slot="start">
+          <img [src]="member.avatar" alt="avatar" />
+        </ion-avatar> -->
+        <ion-label>{{ member.name }}</ion-label>
+        <ion-radio [value]="member.id" slot="end"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+    <ion-list *ngIf="isMultiplePayers">
+      <ion-item *ngFor="let member of groupMembers">
+        <!-- <ion-avatar slot="start">
+          <img [src]="member.avatar" alt="avatar" />
+        </ion-avatar> -->
+        <ion-label>{{ member.name }}</ion-label>
+        <ion-input
+          type="number"
+          [(ngModel)]="member.paidAmount"
+          placeholder="0.00"
+          slot="end"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-item>
+      <ion-label>Paid by multiple</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="isMultiplePayers"></ion-checkbox>
+    </ion-item>
+  </div>
+
+  <!-- Split View -->
+  <div *ngIf="currentView === 'split'">
+    <ion-segment [(ngModel)]="splitType">
+      <ion-segment-button value="equal">
+        <ion-label>Equally</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="unequal">
+        <ion-label>Unequally</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-list>
+      <ion-item *ngFor="let member of groupMembers">
+        <!-- <ion-avatar slot="start">
+          <img [src]="member.avatar" alt="avatar" />
+        </ion-avatar> -->
+        <ion-label>{{ member.name }}</ion-label>
+        <ion-checkbox
+          *ngIf="splitType === 'equal'"
+          slot="end"
+          [(ngModel)]="member.isSelected"
+        ></ion-checkbox>
+        <ion-input
+          *ngIf="splitType !== 'equal'"
+          type="number"
+          [(ngModel)]="member.splitAmount"
+          placeholder="0.00"
+          slot="end"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding">
+      <p *ngIf="splitType === 'equal'">
+        ₹{{ getAmountPerPerson() }}/person ({{ getSelectedCount() }} people)
+      </p>
+    </div>
+  </div>
+</ion-content>

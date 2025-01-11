@@ -1,0 +1,19 @@
+ion-icon {
+  font-size: 30px;
+}
+ion-input {
+  --highlight-color-focused: #7843db;
+
+  --highlight-color-valid: #7843db; /* Highlight color when valid */
+}
+.ion-padding {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+ion-button {
+  padding-top: 5px !important;
+  color: gray;
+  --border-color: #808080;
+}

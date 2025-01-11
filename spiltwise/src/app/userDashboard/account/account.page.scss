@@ -1,0 +1,49 @@
+.profile-section {
+  text-align: center;
+  padding: 16px;
+}
+
+.profile-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #7843db;
+  object-fit: cover;
+}
+
+.camera-btn {
+//   height: 70px;
+//   width: 70px;
+  position: absolute;
+  bottom: -10px;
+  left: 50px;
+
+  border-radius: 30%;
+}
+
+.camera-btn ion-icon {
+  background-color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 40px;
+
+  font-size: 15px;
+  color: gray;
+}
+
+.profile-info h2 {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.profile-info p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}

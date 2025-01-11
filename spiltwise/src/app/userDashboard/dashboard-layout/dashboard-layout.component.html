@@ -1,0 +1,67 @@
+<ion-content [scrollY]="false" [scrollX]="false">
+  <router-outlet></router-outlet>
+</ion-content>
+
+<ion-footer>
+  <div class="footer">
+    <div
+      class="footer-inner ion-margin-vertical"
+      (click)="directToPage('group')"
+    >
+      <ion-icon
+        role="img"
+        name="people-outline"
+        [ngClass]="{ 'active-icon': activeRoute === 'group' }"
+      ></ion-icon>
+      <ion-label [ngClass]="{ 'active-label': activeRoute === 'group' }"
+        >Group</ion-label
+      >
+    </div>
+
+    <div
+      class="footer-inner ion-margin-vertical"
+      (click)="directToPage('friends')"
+    >
+      <ion-icon
+        role="img"
+        name="person-outline"
+        [ngClass]="{ 'active-icon': activeRoute === 'friends' }"
+      ></ion-icon>
+      <ion-label [ngClass]="{ 'active-label': activeRoute === 'friends' }"
+        >Friends</ion-label
+      >
+    </div>
+
+    <div
+      class="footer-inner ion-margin-vertical"
+      (click)="directToPage('activity')"
+    >
+      <ion-icon
+        role="img"
+        name="clipboard-outline"
+        [ngClass]="{ 'active-icon': activeRoute === 'activity' }"
+      ></ion-icon>
+      <ion-label [ngClass]="{ 'active-label': activeRoute === 'activity' }"
+        >Activity</ion-label
+      >
+    </div>
+
+    <div
+      class="footer-inner ion-margin-vertical"
+      (click)="directToPage('account')"
+    >
+      <img
+        [src]="userSignal.user()?.profilePic"
+        width="20"
+        alt="User Image"
+        [ngClass]="{
+          'active-img': activeRoute === 'account',
+          'profile-image': activeRoute !== 'account'
+        }"
+      />
+      <ion-label [ngClass]="{ 'active-label': activeRoute === 'account' }"
+        >Account</ion-label
+      >
+    </div>
+  </div>
+</ion-footer>

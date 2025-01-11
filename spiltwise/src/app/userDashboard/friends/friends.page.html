@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Friends</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+      <ion-button>
+        <ion-icon slot="icon-only" name="person-add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Use *ngIf in Angular/Ionic to toggle between views -->
+  <div *ngIf="friends.length === 0; else friendsList">
+    <!-- No friends view -->
+    <div class="empty-state">
+      <img
+        src="https://img.freepik.com/free-vector/detective-kids-concept-illustration_114360-14825.jpg?t=st=1733113633~exp=1733117233~hmac=cc0f9e586d13e31f87eab8db75654c2c9caa48c41ed97a18763ab47e92f4a2f3&w=740"
+        alt="No friends"
+      />
+
+      <!-- <ion-button expand="block" fill="outline" (click)="clearFilter()"
+        >Clear filter</ion-button
+      > -->
+      <div style="text-align: center">
+        <ion-button fill="outline" (click)="addFriends()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Add more friends
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Friends list view -->
+  <ng-template #friendsList>
+    <div class="friends-list">
+      <p>You are all settled up!</p>
+      <ion-list>
+        <ion-item *ngFor="let friend of friends">
+          <ion-avatar slot="start">
+            <img
+              src="https://img.freepik.com/free-vector/young-man-black-shirt_1308-173618.jpg?t=st=1732856309~exp=1732859909~hmac=40c7e306d65e2c8330ea3947cbd16b1accbc8134225f32f1fb1431100a370d99&w=740"
+            />
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ friend.name }}</h2>
+            <p>no expenses</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <div class="ion-margin-vertical" style="text-align: center">
+        <ion-button fill="outline" (click)="addFriends()">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          Add more friends
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addExpense()">
+      <ion-icon name="receipt-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/home"></ion-back-button>
+  </ion-buttons>
+  <div
+    class="ion-margin-vertical"
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 16px;
+    "
+  >
+    <ion-label style="font-size: 16px">Welcome back to SplitWise!</ion-label>
+  </div>
+</ion-header>
+
+<ion-content>
+  <div class="ion-margin-vertical ion-margin-horizontal">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <ion-input
+        formControlName="email"
+        type="email"
+        fill="solid"
+        label="Email"
+        labelPlacement="floating"
+        helperText="Enter a valid email"
+        errorText="Invalid email"
+        name="email"
+      ></ion-input>
+      <ion-input
+        formControlName="password"
+        type="password"
+        label="Password"
+        fill="solid"
+        label="Password"
+        labelPlacement="floating"
+        helperText="Enter Password"
+        errorText="Password Incorrect"
+        name="password"
+      >
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+    </form>
+
+    <ion-button
+      class="ion-margin-vertical"
+      (click)="onLogin()"
+      expand="full"
+      fill="solid"
+      color="voilet"
+      [disabled]="loginForm.invalid"
+    >
+      Login
+    </ion-button>
+    <div><ion-label color="medium">(All fields are required)</ion-label></div>
+    <ion-label
+      class="ion-margin-vertical"
+      color="voilet"
+      (click)="onForgotPassword()"
+      >Forgot your Password ?</ion-label
+    >
+  </div>
+</ion-content>

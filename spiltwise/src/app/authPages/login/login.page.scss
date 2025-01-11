@@ -1,0 +1,13 @@
+ion-input {
+  --highlight-color-focused: #7843db;
+  --highlight-color-invalid: #ff0000; /* Highlight color when invalid */
+  --highlight-color-valid: #7843db; /* Highlight color when valid */
+}
+ion-back-button {
+  //   --color: #3c2c80;
+  --color: #7843db;
+}
+ion-label {
+  display: flex;
+  justify-content: center;
+}

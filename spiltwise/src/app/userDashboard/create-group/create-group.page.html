@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard/group"></ion-back-button>
+      <ion-label class="ion-margin-horizontal">Create A Group</ion-label>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button
+        color="voilet"
+        (click)="onCreatingGroup()"
+        fill="clear"
+        shape="round"
+      >
+        Done
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Upload Photo Icon and Group Name Input -->
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      margin-top: 20px;
+    "
+  >
+    <ion-button
+      (click)="uploadPhoto()"
+      expand="block"
+      fill="outline"
+      size="small"
+    >
+      <ion-icon
+        class="ion-padding"
+        slot="icon-only"
+        name="camera"
+        style="cursor: pointer"
+      ></ion-icon>
+    </ion-button>
+
+    <!-- Group Name Input -->
+    <!-- <ion-input
+      label="Enter Group Name"
+      class="ion-margin-vertical"
+      [(ngModel)]="groupName"
+      label-placement="floating"
+      fill="solid"
+      placeholder="Enter text"
+    ></ion-input> -->
+    <ion-input
+      label="Group Name"
+      label-placement="stacked"
+      placeholder="Enter text"
+      [(ngModel)]="groupName"
+    ></ion-input>
+  </div>
+</ion-content>

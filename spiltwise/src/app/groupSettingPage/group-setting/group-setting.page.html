@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button>Back</ion-back-button>
+    </ion-buttons>
+    <ion-title>Group Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <!-- Group Title and Edit Icon -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <img src="assets/group-icon.png" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{groupName}}</h2>
+      </ion-label>
+      <ion-button fill="clear" slot="end">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+
+    <!-- Group Members -->
+    <ion-list-header>
+      <ion-label>Group members</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let member of groupMembers">
+      <ion-avatar slot="start">
+        <img 
+          [src]="
+            member.name === userSignal.user()?.name.toLowerCase()
+              ? userSignal.user()?.profilePic
+              : getAvatar(member).url
+          " 
+          alt="{{ member.name }}"
+        />
+      </ion-avatar>
+      
+      <ion-label>
+        <h3>{{ member.name.toLocaleUpperCase() }}</h3>
+      </ion-label>
+    </ion-item>
+
+    <!-- Advanced Settings -->
+    <ion-list-header>
+      <ion-label>Advanced settings</ion-label>
+    </ion-list-header>
+
+    <!-- Leave Group -->
+
+    <!-- Delete Group -->
+    <ion-item color="danger" button (click)="deleteGroup()">
+      <ion-icon slot="start" name="trash-outline"></ion-icon>
+      <ion-label>Delete Group</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

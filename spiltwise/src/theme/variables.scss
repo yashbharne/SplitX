@@ -1,0 +1,19 @@
+// For information on how to create your own theme, please see:
+// http://ionicframework.com/docs/theming/
+:root {
+  --ion-color-voilet: #7843db;
+  --ion-color-voilet-rgb: 120, 67, 219;
+  --ion-color-voilet-contrast: #ffffff;
+  --ion-color-voilet-contrast-rgb: 255, 255, 255;
+  --ion-color-voilet-shade: #6a3bc1;
+  --ion-color-voilet-tint: #8656df;
+}
+
+.ion-color-voilet {
+  --ion-color-base: var(--ion-color-voilet);
+  --ion-color-base-rgb: var(--ion-color-voilet-rgb);
+  --ion-color-contrast: var(--ion-color-voilet-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-voilet-contrast-rgb);
+  --ion-color-shade: var(--ion-color-voilet-shade);
+  --ion-color-tint: var(--ion-color-voilet-tint);
+}

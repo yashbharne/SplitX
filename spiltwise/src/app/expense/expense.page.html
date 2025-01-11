@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button>Back</ion-back-button>
+    </ion-buttons>
+    <!-- <ion-title>{{ expenseData?.description }}</ion-title> -->
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Expense Summary Section -->
+  <div class="expense-summary">
+    <div class="expense-info">
+      <ion-icon name="wallet-outline" class="icon"></ion-icon>
+      <h2>{{ expenseData?.description }}</h2>
+      <h3 class="amount">₹{{ expenseData?.amount }}</h3>
+      <p class="added-by" *ngFor="let paidBy of expenseData?.paidBy">
+        Added by <strong>{{ paidBy?.name }}</strong> on {{
+        expenseData?.createdAt| date }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Payment Details Section -->
+  <div class="details-section">
+    <h3 class="section-title">Who Paid</h3>
+    <ion-list lines="none">
+      <ion-item *ngFor="let paidBy of expenseData?.paidBy" class="payment-item">
+        <ion-avatar slot="start">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h4>{{ paidBy?.name }}</h4>
+          <p>Paid ₹{{ paidBy?.paidAmount }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Owes Summary Section -->
+  <div class="details-section">
+    <h3 class="section-title">Split</h3>
+    <ion-list>
+      <ion-item
+        *ngFor="let owe of expenseData?.splitAmount
+      "
+        class="owes-item"
+      >
+        <ion-avatar slot="start">
+          <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h4>{{ owe?.memberName }}</h4>
+          <!-- <p>{{ owe?.message }}</p> -->
+        </ion-label>
+        <span slot="end" class="owe-amount">₹{{ owe?.amount }}</span>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,140 @@
+<ion-header>
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/home"></ion-back-button>
+  </ion-buttons>
+  <div
+    *ngIf="!(signUpForm.get('fullName')?.value?.length > 0)"
+    class="ion-margin-vertical"
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 16px;
+    "
+  >
+    <ion-label style="font-size: 16px">Welcome back to SplitWise!</ion-label>
+    <ion-label style="font-size: 14px; margin-top: 8px"
+      >Let's create your account.</ion-label
+    >
+  </div>
+</ion-header>
+
+<ion-content style="padding-top: 56px">
+  <form
+    enctype="multipart/form-data"
+    [formGroup]="signUpForm"
+    (ngSubmit)="onSubmit() "
+  >
+    <ion-item>
+      <ion-input
+        formControlName="fullName"
+        class="ion-margin-vertical"
+        label="Full Name"
+        label-placement="floating"
+        fill="outline"
+        placeholder="Enter Full Name"
+        name="FullName"
+        shape="round"
+      ></ion-input>
+
+      <ion-button
+        *ngIf="signUpForm.get('fullName')?.value?.length>0"
+        class="ion-padding"
+        fill="outline"
+        class="ion-margin-horizontal"
+        shape="round"
+        size="large"
+        style="border-color: violet"
+        (click)="uploadImage()"
+      >
+        <img src="{{image}}" alt="" />
+        <ion-icon
+          slot="icon-only"
+          size="large"
+          name="camera-outline"
+        ></ion-icon>
+      </ion-button>
+    </ion-item>
+    <div *ngIf="signUpForm.get('fullName')?.value?.length>0">
+      <ion-item>
+        <ion-input
+          formControlName="email"
+          class="ion-margin-vertical"
+          type="email"
+          fill="outline"
+          label="Email"
+          labelPlacement="floating"
+          helperText="Enter a valid email"
+          errorText="Invalid email"
+          name="email"
+          shape="round"
+          email
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          formControlName="password"
+          class="ion-margin-vertical"
+          label-placement="floating"
+          fill="outline"
+          placeholder="Enter text"
+          type="password"
+          label="Password"
+          name="password"
+          shape="round"
+          [counter]="true"
+        >
+          <ion-input-password-toggle
+            slot="end"
+            *ngIf="signUpForm.get('password')?.value?.length>0"
+          ></ion-input-password-toggle>
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          formControlName="countryCode"
+          class="ion-margin-vertical"
+          label="Country Code"
+          label-placement="floating"
+          fill="outline"
+          type="tel"
+          placeholder="Code"
+          shape="round"
+          name="countryCode"
+          style="max-width: 30%"
+        >
+        </ion-input>
+        <ion-input
+          formControlName="mobileNumber"
+          class="ion-margin-vertical"
+          label="Mobile Number"
+          label-placement="floating"
+          fill="outline"
+          type="tel"
+          maxlength="10"
+          placeholder="Enter mobile number"
+          shape="round"
+          name="mobileNumber"
+          style="flex-grow: 1"
+        >
+        </ion-input>
+      </ion-item>
+    </div>
+
+    <ion-button
+      class="ion-margin-vertical ion-margin-horizontal"
+      expand="block"
+      fill="solid"
+      color="voilet"
+      [disabled]="signUpForm.invalid"
+      type="Submit"
+      >Submit</ion-button
+    >
+    <div
+      style="text-align: center"
+      *ngIf="signUpForm.get('fullName')?.value?.length>0"
+    >
+      <ion-label color="medium">*(All fields are required)</ion-label>
+    </div>
+  </form>
+</ion-content>

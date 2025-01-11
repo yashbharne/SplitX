@@ -1,0 +1,16 @@
+ion-avatar img {
+  border-radius: 50%;
+}
+
+ion-badge {
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+ion-item[color="danger"] {
+  --color: white;
+  --background: #eb445a;
+  --color-activated: white;
+  --background-activated: #d33c4d;
+}

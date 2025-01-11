@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Account</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Profile Section -->
+  <div class="profile-section">
+    <div class="profile-image-container">
+      <img
+        class="profile-img"
+        src="{{userSignal.user()?.profilePic}}"
+        alt="Profile Picture"
+      />
+      <!-- Update Icon -->
+      <ion-button class="camera-btn" fill="clear">
+        <ion-icon name="camera-outline"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="profile-info">
+      <h2>{{userSignal.user()?.name}}</h2>
+      <p>{{userSignal.user()?.email}}</p>
+    </div>
+  </div>
+
+  <ion-list>
+    <ion-item>
+      <ion-icon slot="start" name="qr-code-outline"></ion-icon>
+      <ion-label>Scan Code</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="diamond-outline"></ion-icon>
+      <ion-label>Splitwise Pro</ion-label>
+    </ion-item>
+
+    <ion-list-header>Preferences</ion-list-header>
+    <ion-item>
+      <ion-icon slot="start" name="mail-outline"></ion-icon>
+      <ion-label>Email Settings</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="notifications-outline"></ion-icon>
+      <ion-label>Device and Push Notifications</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+      <ion-label>Security</ion-label>
+    </ion-item>
+
+    <ion-list-header>Feedback</ion-list-header>
+    <ion-item>
+      <ion-icon slot="start" name="star-outline"></ion-icon>
+      <ion-label>Rate Splitwise</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+      <ion-label>Contact Splitwise Support</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div class="logout-section">
+    <ion-button expand="block" color="voilet" (click)="onLogout()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Log Out
+    </ion-button>
+  </div>
+</ion-content>
