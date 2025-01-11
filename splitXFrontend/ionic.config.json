@@ -1,0 +1,7 @@
+{
+  "name": "spiltwise",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

@@ -12,6 +12,8 @@ import {
   IonList,
   IonListHeader,
   IonText,
+  IonButtons,
+  IonTabButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -19,6 +21,8 @@ import {
   receiptOutline,
   settings,
   closeCircle,
+  camera,
+  calculatorOutline,
 } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GroupsService } from 'src/app/services/groups.service';
@@ -30,6 +34,7 @@ import { GroupExpenseService } from 'src/app/services/group-expense.service';
   styleUrls: ['./splitgroup.page.scss'],
   standalone: true,
   imports: [
+    IonButtons,
     IonListHeader,
     IonList,
     IonInput,
@@ -54,9 +59,7 @@ export class SplitgroupPage implements OnInit {
     private routes: ActivatedRoute,
     private group: GroupsService,
     private groupExpense: GroupExpenseService
-  ) {
-    addIcons({ settings, arrowBackCircle, closeCircle, receiptOutline });
-  }
+  ) {}
 
   addmembers: any[] = [];
   groupId: any = '';
@@ -67,7 +70,6 @@ export class SplitgroupPage implements OnInit {
   expenses: any = '';
 
   ngOnInit() {
-    addIcons({ settings, arrowBackCircle, receiptOutline });
     this.routes.params.subscribe((param) => {
       this.groupId = param['groupId'];
       console.log(this.groupId);
@@ -75,6 +77,7 @@ export class SplitgroupPage implements OnInit {
     this.getGroupDetails();
     this.getAllMembers();
     this.getExpenseOfGroup();
+    addIcons({ receiptOutline, settings, arrowBackCircle, closeCircle });
   }
   onBack() {
     this.router.navigateByUrl('/dashboard/group');
@@ -168,5 +171,8 @@ export class SplitgroupPage implements OnInit {
     console.log('clicked');
 
     this.router.navigateByUrl(`/group-setting/${this.groupId}`);
+  }
+  onCalculateBalance() {
+    this.router.navigateByUrl(`/group-balance/${this.groupId}`);
   }
 }

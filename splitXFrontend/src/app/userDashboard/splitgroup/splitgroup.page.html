@@ -59,7 +59,7 @@
     "
   >
     <ion-label class="ion-margin-vertical"
-      >{{ groupDetails?.groupName }}</ion-label
+      >{{ groupDetails?.groupName?.toUpperCase() }}</ion-label
     >
   </div>
   <div *ngIf="groupMembers.length === 1">
@@ -208,6 +208,14 @@
     ></ion-icon>
     Add Expense
   </ion-button> -->
+
+  <div class="center-button">
+    <ion-buttons>
+      <ion-button (click)="onCalculateBalance()">
+        <ion-label>Calculate Balance</ion-label>
+      </ion-button>
+    </ion-buttons>
+  </div>
 
   <div style="padding: 20px; margin-top: 20px">
     <h3>Expenses</h3>

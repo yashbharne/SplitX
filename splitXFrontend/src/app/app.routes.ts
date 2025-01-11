@@ -90,4 +90,11 @@ export const routes: Routes = [
         (m) => m.GroupSettingPage
       ),
   },
+  {
+    path: 'group-balance/:groupId',
+    loadComponent: () =>
+      import('./group-balance/group-balance.page').then(
+        (m) => m.GroupBalancePage
+      ),
+  },
 ];

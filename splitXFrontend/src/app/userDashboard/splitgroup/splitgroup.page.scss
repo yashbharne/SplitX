@@ -1,0 +1,10 @@
+button {
+  color: #7843db;
+}
+.center-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Optional if you want to center it vertically within a container */
+  text-align: center;
+}

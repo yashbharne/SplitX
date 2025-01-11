@@ -1,0 +1,30 @@
+ion-content {
+  --background: #f3f4f6; /* Light background */
+}
+
+.settlement-card {
+  margin: 10px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+}
+
+ion-card-title {
+  color: #3b5998; /* Custom blue shade */
+  display: flex;
+  align-items: center;
+}
+
+ion-chip {
+  margin-top: 5px;
+}
+
+.member-avatar ion-icon {
+  font-size: 2.5rem;
+  color: #6c757d;
+}
+
+ion-badge {
+  font-size: 0.8rem;
+  padding: 0.5rem;
+}

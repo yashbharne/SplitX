@@ -13,16 +13,21 @@ export class GroupsService {
 
     return this.httpService.securedPost('api/group/addGroup', data);
   }
-  getGroupsOfUser() {
+  getGroupsOfUser(): Observable<any> {
     return this.httpService.securedGet('api/group/getAllGroups');
   }
   getGroupDetails(id: string): Observable<any> {
     return this.httpService.securedGet(`api/group/getGroupDetails/${id}`);
   }
-  addMember(data: any) {
+  addMember(data: any): Observable<any> {
     return this.httpService.securedPost(`api/group/addMember`, data);
   }
-  getAllMember(data: any) {
+  getAllMember(data: any): Observable<any> {
     return this.httpService.securedPost(`api/group/getAllMembers`, data);
+  }
+  getGroupSettlement(groupId: string): Observable<any> {
+    return this.httpService.securedGet(
+      `api/groupExpense/getGroupBalance/${groupId}`
+    );
   }
 }
