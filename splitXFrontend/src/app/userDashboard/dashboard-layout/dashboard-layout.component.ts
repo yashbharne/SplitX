@@ -3,15 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import {
-  IonTitle,
-  IonToolbar,
-  IonHeader,
   IonFooter,
-  IonItem,
   IonLabel,
   IonIcon,
   IonContent,
-  IonRouterOutlet,
+ 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -29,6 +25,7 @@ import { UserSignalService } from 'src/app/services/user-signal.service';
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss'],
   imports: [
+    
     IonContent,
     IonIcon,
     IonLabel,

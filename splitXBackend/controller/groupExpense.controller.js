@@ -199,6 +199,8 @@ const calculateGroupBalances = async (req, res) => {
         );
 
         if (creditorMatch) {
+          console.log("Creditor Found: ", creditorMatch);
+
           for (const debtor of creditorMatch.member) {
             const debtorMemberId = debtor.memberId._id.toString();
 
@@ -232,9 +234,7 @@ const calculateGroupBalances = async (req, res) => {
 
                     if (participant) {
                       let share = participant.amount / amount;
-
                       eachSplitAmount = member.paidAmount * share;
-                      //
                     }
                   }
 
@@ -253,33 +253,64 @@ const calculateGroupBalances = async (req, res) => {
                     debtor.amount += deficit;
                   }
                 }
+              } else {
+                console.log(
+                  "Reverse Member Not present",
+                  "paid member Id: ",
+                  paidMemberId,
+                  "reverse member Id: ",
+                  debtorMemberId
+                );
+                // const findCreditor = group.settlement.find(
+                //   (settlement) =>
+                //     settlement.creditor._id.toString() === debtorMemberId
+                // );
+                // findCreditor.member.push({ memberId: paidMemberId, amount: 0 });
+                // console.log(findCreditor);
               }
+            } else {
+              console.log("Debtor Not Found: ", debtorMemberId);
             }
           }
         }
       }
     }
     const groupMembers = await GroupMember.find({ groupId: groupId });
-    console.log(groupMembers);
+
+    groupMembers.forEach((member) => {
+      member.borrows = 0;
+      member.owes = 0;
+    });
 
     group.settlement.forEach((settlement) => {
       let creditorAmount = 0;
-      console.log(settlement.creditor);
 
-      const creditor = settlement.creditor._id;
-      const insertCreditAmountToMember = groupMembers.find(
-        (member) => member._id.toString() === creditor.toString()
+      const creditorId = settlement.creditor._id;
+
+      const creditorMember = groupMembers.find(
+        (member) => member._id.toString() === creditorId.toString()
       );
 
       settlement.member.forEach((member) => {
         creditorAmount += member.amount;
-      });
-      settlement.creditorAmount = creditorAmount;
 
-      if (insertCreditAmountToMember) {
-        insertCreditAmountToMember.borrows = creditorAmount;
+        const debtorMember = groupMembers.find(
+          (groupMember) =>
+            groupMember._id.toString() === member.memberId._id.toString()
+        );
+
+        if (debtorMember) {
+          debtorMember.owes += member.amount;
+        }
+      });
+
+      settlement.creditorAmount = creditorAmount;
+      if (creditorMember) {
+        creditorMember.borrows += creditorAmount;
       }
     });
+
+    console.log("Group Members after Calculation:", groupMembers);
 
     await group.save();
 

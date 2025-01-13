@@ -80,7 +80,7 @@ export class GroupPage implements OnInit {
     console.log(group.groupName);
 
     // Use Unsplash Source API for random nature images
-    return `https://source.unsplash.com/random/80x80/?nature,${encodeURIComponent(
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
       group.groupName
     )}`;
   }

@@ -1,22 +1,32 @@
 :host {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Ensure full height */
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent additional scrollbars */
+}
+
+ion-header {
+  flex-shrink: 0; /* Prevent the header from shrinking */
 }
 
 ion-content {
-  flex: 1; /* Fills the space above footer */
-  overflow: auto;
-  --padding-bottom: 70px; /* Reserve space for footer */
+  flex: 1; /* Take remaining space between header and footer */
+  --padding-bottom: 70px; /* Reserve space for the footer */
+  overflow-y: auto; /* Allow content to scroll */
 }
 
 ion-footer {
-  height: 70px; /* Set footer height */
+  height: 70px; /* Fixed height of the footer */
+  flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
 .footer {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  background-color: #fff; /* Footer background color */
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for footer */
 }
 
 .footer-inner {
@@ -24,35 +34,26 @@ ion-footer {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease;
-}
-
-ion-icon {
-  font-size: 20px;
-}
-
-ion-label {
-  font-size: small;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
 .active-icon,
 .active-label {
-  color: #7843db; /* Active icon color */
+  color: #7843db; /* Highlight color for active state */
 }
 
 .active-img {
   border: 2px solid #7843db;
-  border-radius: 50%; /* Makes the image round */
-  padding: 2px; /* Optional padding between the image and the border */
+  border-radius: 50%;
   width: 30px;
   height: 30px;
-  object-fit: cover; /* Ensures image maintains aspect ratio */
+  object-fit: cover;
 }
 
 .profile-image {
   border: 2px solid black;
   border-radius: 50%;
-  padding: 2px;
   width: 30px;
   height: 30px;
   object-fit: cover;

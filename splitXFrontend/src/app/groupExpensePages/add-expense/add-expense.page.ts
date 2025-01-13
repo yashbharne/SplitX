@@ -71,10 +71,10 @@ interface GroupMember {
 export class AddExpensePage implements OnInit {
   description: string = '';
   amount: number | null = null;
-  splitType: string = 'equally';
+  splitType: string = '';
   currentView: 'main' | 'paidBy' | 'split' = 'main';
   isMultiplePayers: boolean = false;
-  selectedPayer: string = 'you';
+  selectedPayer: string = '';
 
   groupMembers: GroupMember[] = [];
   groupId: string = '';
@@ -127,7 +127,7 @@ export class AddExpensePage implements OnInit {
       return 'Multiple';
     }
     const payer = this.groupMembers.find((m) => m.id === this.selectedPayer);
-    return payer ? payer.name : 'you';
+    return payer ? payer.name : '';
   }
 
   getAmountPerPerson(): number {

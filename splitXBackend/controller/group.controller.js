@@ -90,6 +90,7 @@ const addMember = async (req, res) => {
 
     // Fetch all members of the group
     const allMembers = await GroupMember.find({ groupId: groupId });
+    console.log("before Array: ", group.settlement);
 
     // Update the settlement array
     for (const creditor of allMembers) {
@@ -108,8 +109,46 @@ const addMember = async (req, res) => {
         };
 
         group.settlement.push(settlementEntry);
+      } else {
+        // If creditor already exists, update members without duplicates
+        const existingMemberIds = existingCreditor.member.map((m) =>
+          String(m.memberId)
+        );
+
+        // Add new members to the existing creditor with amount: 0, ensuring no duplicates
+        const newMembers = allMembers
+          .filter(
+            (m) =>
+              String(m._id) !== String(creditor._id) &&
+              !existingMemberIds.includes(String(m._id))
+          )
+          .map((m) => ({ memberId: m._id, amount: 0 }));
+
+        // Only add unique members to the creditor
+        existingCreditor.member.push(
+          ...newMembers.filter(
+            (newMember) =>
+              !existingMemberIds.includes(String(newMember.memberId))
+          )
+        );
       }
     }
+
+    // Update previous creditors with the new member
+    for (const creditor of group.settlement) {
+      if (String(creditor.creditor) !== String(allMembers[0]._id)) {
+        // Check if the new member is already in the creditor's member list
+        if (
+          !creditor.member.some(
+            (m) => String(m.memberId) === String(allMembers[0]._id)
+          )
+        ) {
+          creditor.member.push({ memberId: allMembers[0]._id, amount: 0 });
+        }
+      }
+    }
+
+    console.log("after Array: ", group.settlement);
 
     await group.save();
 

@@ -1,15 +1,17 @@
-<ion-content [scrollY]="false" [scrollX]="false">
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content [scrollY]="false" class="dashboard-content">
   <router-outlet></router-outlet>
 </ion-content>
 
 <ion-footer>
   <div class="footer">
-    <div
-      class="footer-inner ion-margin-vertical"
-      (click)="directToPage('group')"
-    >
+    <div class="footer-inner" (click)="directToPage('group')">
       <ion-icon
-        role="img"
         name="people-outline"
         [ngClass]="{ 'active-icon': activeRoute === 'group' }"
       ></ion-icon>
@@ -17,13 +19,8 @@
         >Group</ion-label
       >
     </div>
-
-    <div
-      class="footer-inner ion-margin-vertical"
-      (click)="directToPage('friends')"
-    >
+    <div class="footer-inner" (click)="directToPage('friends')">
       <ion-icon
-        role="img"
         name="person-outline"
         [ngClass]="{ 'active-icon': activeRoute === 'friends' }"
       ></ion-icon>
@@ -31,13 +28,8 @@
         >Friends</ion-label
       >
     </div>
-
-    <div
-      class="footer-inner ion-margin-vertical"
-      (click)="directToPage('activity')"
-    >
+    <div class="footer-inner" (click)="directToPage('activity')">
       <ion-icon
-        role="img"
         name="clipboard-outline"
         [ngClass]="{ 'active-icon': activeRoute === 'activity' }"
       ></ion-icon>
@@ -45,14 +37,9 @@
         >Activity</ion-label
       >
     </div>
-
-    <div
-      class="footer-inner ion-margin-vertical"
-      (click)="directToPage('account')"
-    >
+    <div class="footer-inner" (click)="directToPage('account')">
       <img
         [src]="userSignal.user()?.profilePic"
-        width="20"
         alt="User Image"
         [ngClass]="{
           'active-img': activeRoute === 'account',
