@@ -18,6 +18,9 @@ import {
   IonBadge,
   NavController,
   AlertController,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -35,6 +38,8 @@ import { GenerateAvatarService } from 'src/app/services/generate-avatar.service'
 interface GroupMember {
   name: string;
   avatar?: string; // Optional if not all members have avatars
+  owes: number;
+  borrows: number;
 }
 @Component({
   selector: 'app-group-setting',
@@ -42,6 +47,9 @@ interface GroupMember {
   styleUrls: ['./group-setting.page.scss'],
   standalone: true,
   imports: [
+    IonCol,
+    IonRow,
+    IonGrid,
     IonListHeader,
     IonIcon,
     IonButton,

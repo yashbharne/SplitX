@@ -159,164 +159,6 @@ const getExpense = async (req, res) => {
   }
 };
 
-// const calculateGroupBalances = async (req, res) => {
-//   // try {
-//   //   const groupMembers = await GroupMember.find({ groupId });
-//   //   if (!groupMembers.length) {
-//   //     return res
-//   //       .status(404)
-//   //       .json({ message: "No members found for this group." });
-//   //   }
-
-//   //   const expenses = await Expense.find({ groupId });
-//   //   if (!expenses.length) {
-//   //     return res
-//   //       .status(200)
-//   //       .json({ message: "No expenses found for this group." });
-//   //   }
-
-//   //   const balances = groupMembers.reduce((acc, member) => {
-//   //     acc[member._id] = { owes: 0, borrows: 0 };
-//   //     return acc;
-//   //   }, {});
-
-//   //   expenses.forEach(async (expense) => {
-//   //     const { splitAmount, paidBy, participants, splitType, amount } = expense;
-//   //     splitAmount.forEach(({ memberId, amount }) => {
-//   //       const memberPaid = paidBy.find(
-//   //         (payer) => String(payer.id) === String(memberId)
-//   //       );
-
-//   //       const memberPaidAmount = memberPaid ? memberPaid.paidAmount : 0;
-
-//   //       balances[memberId].owes += Math.max(amount - memberPaidAmount, 0);
-//   //     });
-
-//   //     paidBy.forEach(({ id: payerId, paidAmount }) => {
-//   //       const payerSplit = splitAmount.find(
-//   //         (split) => String(split.memberId) === String(payerId)
-//   //       );
-//   //       const payerOwes = payerSplit ? payerSplit.amount : 0;
-
-//   //       balances[payerId].borrows += Math.max(paidAmount - payerOwes, 0);
-//   //     });
-//   //   });
-
-//   //   const updatePromises = groupMembers.map((member) => {
-//   //     const { owes, borrows } = balances[member._id];
-//   //     return GroupMember.findByIdAndUpdate(
-//   //       member._id,
-//   //       { owes, borrows },
-//   //       { new: true }
-//   //     );
-//   //   });
-//   //   const updatedMembers = await Promise.all(updatePromises);
-
-//   //   return res.status(200).json({
-//   //     message: "Group balances calculated successfully.",
-//   //     members: updatedMembers,
-//   //   });
-//   // } catch (error) {
-//   //   console.error("Error calculating group balances:", error);
-//   //   return res
-//   //     .status(500)
-//   //     .json({ message: "Server error", error: error.message });
-//   // }
-//   const { groupId } = req.params;
-
-//   if (!groupId) {
-//     return res.status(400).json({ message: "Group ID is required." });
-//   }
-//   try {
-//     const group = await Group.findById(groupId);
-//     console.log(group);
-
-//     group.settlement.forEach((settlement) => {
-//       // Set creditorAmount to 0
-//       settlement.creditorAmount = 0;
-
-//       // Iterate over each member and set their amount to 0
-//       settlement.member.forEach((member) => {
-//         member.amount = 0;
-//       });
-//     });
-//     await group.save();
-
-//     const groupExpenses = await Expense.find({ groupId });
-//     let groupExpensesArray = [];
-//     groupExpensesArray = groupExpenses;
-
-//     groupExpensesArray.forEach((expense) => {
-//       const { amount, participants, splitType, paidBy, splitAmount } = expense;
-//       paidBy.forEach(async (member) => {
-//         const paidMemberId = member.id;
-
-//         const creditorMatch = group.settlement.find(
-//           (settlement) => settlement.creditor.toString() === paidMemberId
-//         );
-
-//         if (creditorMatch) {
-//           creditorMatch.member.forEach((debtor) => {
-//             const debtorMemberId = debtor.memberId.toString();
-
-//             const reverseMatch = group.settlement.find(
-//               (settlement) =>
-//                 settlement.creditor.toString() === debtorMemberId &&
-//                 settlement.member.some(
-//                   (m) => m.memberId.toString() === paidMemberId
-//                 )
-//             );
-
-//             if (reverseMatch) {
-//               const reverseMember = reverseMatch.member.find(
-//                 (m) => m.memberId.toString() === paidMemberId
-//               );
-
-//               if (reverseMember) {
-//                 let eachSplitAmount = 0;
-//                 if (splitType === "equal") {
-//                   eachSplitAmount = member.paidAmount / participants.length;
-//                 } else if (splitType === "unequal") {
-//                   splitAmount.forEach((participant) => {
-//                     console.log("p Member Id: ", participant.memberId);
-//                     console.log("debtor Member Id: ", debtorMemberId);
-
-//                     if (participant.memberId === debtorMemberId) {
-//                       let share = participant.amount / amount;
-
-//                       eachSplitAmount = member.paidAmount * share;
-//                     }
-//                   });
-//                 }
-
-//                 if (reverseMember.amount === eachSplitAmount) {
-//                   reverseMember.amount = 0;
-//                   debtor.amount = 0;
-//                 } else if (reverseMember.amount > eachSplitAmount) {
-//                   const excess = reverseMember.amount - eachSplitAmount;
-
-//                   reverseMember.amount = excess;
-//                   debtor.amount = 0;
-//                 } else if (reverseMember.amount < eachSplitAmount) {
-//                   const deficit = eachSplitAmount - reverseMember.amount;
-
-//                   reverseMember.amount = 0;
-//                   debtor.amount = deficit;
-//                 }
-//               }
-//             } else {
-//             }
-//           });
-//         } else {
-//         }
-//       });
-//     });
-
-//     await group.save();
-
-//     res.status(200).json({ group: group.settlement });
-//   } catch (error) {}
-// };
 const calculateGroupBalances = async (req, res) => {
   const { groupId } = req.params;
 
@@ -325,7 +167,9 @@ const calculateGroupBalances = async (req, res) => {
   }
 
   try {
-    const group = await Group.findById(groupId);
+    const group = await Group.findById(groupId)
+      .populate("settlement.creditor", "name") // Populate creditor's name
+      .populate("settlement.member.memberId", "name"); // Populate member's name
     if (!group) {
       return res.status(404).json({ message: "Group not found." });
     }
@@ -351,12 +195,12 @@ const calculateGroupBalances = async (req, res) => {
       for (const member of paidBy) {
         const paidMemberId = member.id.toString();
         const creditorMatch = group.settlement.find(
-          (settlement) => settlement.creditor.toString() === paidMemberId
+          (settlement) => settlement.creditor._id.toString() === paidMemberId
         );
 
         if (creditorMatch) {
           for (const debtor of creditorMatch.member) {
-            const debtorMemberId = debtor.memberId.toString();
+            const debtorMemberId = debtor.memberId._id.toString();
 
             const isDebtorPresent = participants.some(
               (participant) =>
@@ -365,15 +209,15 @@ const calculateGroupBalances = async (req, res) => {
             if (isDebtorPresent) {
               const reverseMatch = group.settlement.find(
                 (settlement) =>
-                  settlement.creditor.toString() === debtorMemberId &&
+                  settlement.creditor._id.toString() === debtorMemberId &&
                   settlement.member.some(
-                    (m) => m.memberId.toString() === paidMemberId
+                    (m) => m.memberId._id.toString() === paidMemberId
                   )
               );
 
               if (reverseMatch) {
                 const reverseMember = reverseMatch.member.find(
-                  (m) => m.memberId.toString() === paidMemberId
+                  (m) => m.memberId._id.toString() === paidMemberId
                 );
 
                 if (reverseMember) {
@@ -394,7 +238,6 @@ const calculateGroupBalances = async (req, res) => {
                     }
                   }
 
-                  // Adjust the amounts based on the reverseMember's amount and the calculated split
                   if (reverseMember.amount === eachSplitAmount) {
                     reverseMember.amount = 0;
                     debtor.amount = 0;
@@ -416,19 +259,34 @@ const calculateGroupBalances = async (req, res) => {
         }
       }
     }
+    const groupMembers = await GroupMember.find({ groupId: groupId });
+    console.log(groupMembers);
 
     group.settlement.forEach((settlement) => {
       let creditorAmount = 0;
-
       console.log(settlement.creditor);
+
+      const creditor = settlement.creditor._id;
+      const insertCreditAmountToMember = groupMembers.find(
+        (member) => member._id.toString() === creditor.toString()
+      );
 
       settlement.member.forEach((member) => {
         creditorAmount += member.amount;
       });
       settlement.creditorAmount = creditorAmount;
+
+      if (insertCreditAmountToMember) {
+        insertCreditAmountToMember.borrows = creditorAmount;
+      }
     });
 
     await group.save();
+
+    for (const member of groupMembers) {
+      await member.save();
+    }
+
     res.status(200).json({
       message: "Group balances updated.",
       settlement: group.settlement,

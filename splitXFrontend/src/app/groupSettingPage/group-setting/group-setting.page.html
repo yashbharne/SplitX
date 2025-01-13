@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button>Back</ion-back-button>
+      <ion-back-button
+      [defaultHref]="'/dashboard/splitgroup/' + groupId"
+    ></ion-back-button>
     </ion-buttons>
     <ion-title>Group Settings</ion-title>
   </ion-toolbar>
@@ -28,27 +30,37 @@
     </ion-list-header>
     <ion-item *ngFor="let member of groupMembers">
       <ion-avatar slot="start">
-        <img 
+        <img
           [src]="
             member.name === userSignal.user()?.name.toLowerCase()
               ? userSignal.user()?.profilePic
               : getAvatar(member).url
-          " 
+          "
           alt="{{ member.name }}"
         />
       </ion-avatar>
-      
+
       <ion-label>
         <h3>{{ member.name.toLocaleUpperCase() }}</h3>
       </ion-label>
+
+      <!-- Fixed space for owes and borrows -->
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-label color="danger">{{member.owes}}</ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label color="success"> {{ member.borrows }}</ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
 
     <!-- Advanced Settings -->
     <ion-list-header>
       <ion-label>Advanced settings</ion-label>
     </ion-list-header>
-
-    <!-- Leave Group -->
 
     <!-- Delete Group -->
     <ion-item color="danger" button (click)="deleteGroup()">

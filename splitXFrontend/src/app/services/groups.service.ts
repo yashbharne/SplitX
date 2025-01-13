@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpService } from './http.service';
 import { Observable } from 'rxjs';
 
@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 })
 export class GroupsService {
   constructor(private httpService: HttpService) {}
-
   addGroup(data: any): Observable<any> {
     console.log(data);
 

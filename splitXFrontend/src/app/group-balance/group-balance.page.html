@@ -1,36 +1,49 @@
 <ion-header>
-  <ion-toolbar color="tertiary">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        [defaultHref]="'/dashboard/splitgroup/' + groupId"
+      ></ion-back-button>
+    </ion-buttons>
     <ion-title>Group Settlement</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let item of settlement" class="settlement-card">
-    <ion-card-header>
-      <ion-card-title>
-        <ion-icon name="cash-outline" slot="start"></ion-icon>
-        Creditor: {{ item?.creditor }}
-      </ion-card-title>
-      <ion-chip color="success">
-        <ion-label>Total Credit: ₹{{ item?.creditorAmount | number: '1.2-2' }}</ion-label>
-      </ion-chip>
-    </ion-card-header>
+  <ion-card *ngFor="let item of groupSettlement" class="settlement-card">
+    <ng-container *ngIf="item?.creditorAmount !== 0">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="cash-outline" slot="start"></ion-icon>
+          Creditor: {{ item?.creditor?.name?.toUpperCase() }}
+        </ion-card-title>
 
-    <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let member of item.member" lines="full">
-          <ion-avatar slot="start" class="member-avatar">
-            <ion-icon name="person-circle-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            Member: {{ member.memberId }}
-            <p>Owes: ₹{{ member.amount | number: '1.2-2' }}</p>
-          </ion-label>
-          <ion-badge color="warning" slot="end" *ngIf="member.amount > 0">
-            Pay
-          </ion-badge>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
+        <ion-chip color="success">
+          <ion-label
+            >Total Credit: ₹{{ item?.creditorAmount | number: '1.2-2'
+            }}</ion-label
+          >
+        </ion-chip>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list>
+          <!-- Use ng-container to resolve multiple bindings -->
+          <ng-container *ngFor="let member of item?.member">
+            <ion-item *ngIf="member?.amount !== 0" lines="full">
+              <ion-avatar slot="start" class="member-avatar">
+                <ion-icon name="person-circle-outline"></ion-icon>
+              </ion-avatar>
+              <ion-label>
+                {{ member?.memberId?.name?.toUpperCase() }}
+                <p style="color: red">
+                  ₹{{ member?.amount | number: '1.2-2' }}
+                </p>
+              </ion-label>
+            </ion-item>
+          </ng-container>
+        </ion-list>
+      </ion-card-content>
+    </ng-container>
   </ion-card>
 </ion-content>
