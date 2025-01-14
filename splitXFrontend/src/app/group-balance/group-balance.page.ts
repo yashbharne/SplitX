@@ -29,14 +29,14 @@ import { UserSignalService } from '../services/user-signal.service';
 
 interface settlement {
   creditor: {
-    id: string;
+    _id: string;
     name: string;
   };
   creditorAmount: number;
   member: [
     {
       memberId: {
-        id: string;
+        _id: string;
         name: string;
       };
       amount: number;
@@ -104,5 +104,28 @@ export class GroupBalancePage implements OnInit {
       name
     )}`;
     return { url: diceBearUrl, type: 'image' };
+  }
+  onMarkAsPaid(creditorId: string, debtorId: string, amount: number) {
+    // console.log(creditorId, debtorId, amount);
+    const creditor = creditorId;
+    const debtor = debtorId;
+    const amountToBePaid = amount;
+    const data = {
+      creditorId: creditor,
+
+      debtorId: debtor,
+      amount: amountToBePaid,
+      groupId: this.groupId,
+    };
+    console.log(data);
+
+    // this.groupService.markAsPaid(data).subscribe({
+    //   next: (res: any) => {
+    //     console.log(res);
+    //   },
+    //   error: (error) => {
+    //     console.log(error);
+    //   },
+    // });
   }
 }

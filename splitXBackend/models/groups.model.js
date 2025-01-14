@@ -44,7 +44,19 @@ const groupSchema = mongoose.Schema({
       ],
     },
   ],
-
+  paidTransaction: [
+    {
+      creditorId: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+      debtorId: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+      amount: {
+        type: Number,
+      },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 

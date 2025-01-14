@@ -115,6 +115,7 @@ const addExpense = async (req, res) => {
 
     return res.status(200).json({
       message: "Expense added successfully.",
+
       expense,
     });
   } catch (error) {
@@ -208,6 +209,7 @@ const calculateGroupBalances = async (req, res) => {
               (participant) =>
                 participant.memberId.toString() === debtorMemberId
             );
+
             if (isDebtorPresent) {
               const reverseMatch = group.settlement.find(
                 (settlement) =>
@@ -261,8 +263,9 @@ const calculateGroupBalances = async (req, res) => {
                   "reverse member Id: ",
                   debtorMemberId
                 );
-                // const findCreditor = group.settlement.find(
-                //   (settlement) =>
+                // for (const member of groupMembers) {
+                //   await member.save();
+                // }
                 //     settlement.creditor._id.toString() === debtorMemberId
                 // );
                 // findCreditor.member.push({ memberId: paidMemberId, amount: 0 });
@@ -275,12 +278,7 @@ const calculateGroupBalances = async (req, res) => {
         }
       }
     }
-    const groupMembers = await GroupMember.find({ groupId: groupId });
-
-    groupMembers.forEach((member) => {
-      member.borrows = 0;
-      member.owes = 0;
-    });
+    const groupMembers = group.members;
 
     group.settlement.forEach((settlement) => {
       let creditorAmount = 0;
@@ -310,21 +308,95 @@ const calculateGroupBalances = async (req, res) => {
       }
     });
 
-    console.log("Group Members after Calculation:", groupMembers);
-
     await group.save();
-
-    for (const member of groupMembers) {
-      await member.save();
-    }
 
     res.status(200).json({
       message: "Group balances updated.",
       settlement: group.settlement,
+      groupId: groupId,
     });
   } catch (error) {
     console.error("Error calculating group balances:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+const settleBalance = async (req, res) => {
+  const { groupId, amount, creditorId, debtorId } = req.body;
+
+  console.log(
+    "groupId: ",
+    groupId,
+    "amount: ",
+    amount,
+    "creditorId: ",
+    creditorId,
+    "debtorId: ",
+    debtorId
+  );
+
+  if (!amount || !creditorId || !debtorId || !groupId) {
+    return res.status(400).json({
+      message: "Amount, creditorId, debtorId, and groupId are required",
+    });
+  }
+
+  try {
+    // Ensure all IDs are ObjectIds
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(400).json({ message: "Group not found" });
+    }
+
+    // Add transaction
+    group.paidTransaction.push({
+      creditorId: creditorId,
+      debtorId: debtorId,
+      amount,
+    });
+
+    const settlementEntry = group.settlement.find(
+      (entry) => entry.creditor.toString() === creditorId
+    );
+
+    if (!settlementEntry) {
+      return res
+        .status(400)
+        .json({ message: "Creditor not found in settlement" });
+    }
+
+    // Filter the member array to find the specific debtor
+    const debtorEntry = settlementEntry.member.find(
+      (m) => m.memberId.toString() === debtorId
+    );
+
+    if (!debtorEntry) {
+      return res
+        .status(400)
+        .json({ message: "Debtor not found in member array" });
+    }
+
+    settlementEntry.creditorAmount -= amount;
+    debtorEntry.amount -= amount;
+
+    // Create a response with only the relevant creditor and debtor details
+    const markAsPaid = {
+      creditor: settlementEntry.creditor,
+      creditorAmount: settlementEntry.creditorAmount,
+      member: [debtorEntry], // Include only the relevant debtor
+    };
+
+    //Save the group after changes
+    await group.save();
+
+    return res
+      .status(200)
+      .json({ message: "Balance settled successfully", markAsPaid });
+  } catch (error) {
+    console.error("Error in settleBalance:", error);
+    return res
+      .status(500)
+      .json({ message: `Something went wrong: ${error.message}` });
   }
 };
 
@@ -335,4 +407,5 @@ module.exports = {
   getAllGroupExpenses,
   getExpense,
   calculateGroupBalances,
+  settleBalance,
 };

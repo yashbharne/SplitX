@@ -57,27 +57,6 @@ const expenseSchema = mongoose.Schema({
       amount: { type: Number },
     },
   ],
-  owesTo: [
-    {
-      creditorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "groupMember",
-      },
-      creditorName: {
-        type: String,
-      },
-      debtorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "groupMember",
-      },
-      debtorName: {
-        type: String,
-      },
-      amount: {
-        type: Number,
-      },
-    },
-  ],
   createdAt: {
     type: Date,
     default: Date.now,

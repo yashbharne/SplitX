@@ -6,6 +6,7 @@ const {
   getAllGroupExpenses,
   getExpense,
   calculateGroupBalances,
+  settleBalance,
 } = require("../controller/groupExpense.controller.js");
 
 router.route("/addExpense").post(verifyJwt, addExpense);
@@ -16,5 +17,6 @@ router.route("/getExpense/:expenseId").get(verifyJwt, getExpense);
 router
   .route("/getGroupBalance/:groupId")
   .get(verifyJwt, calculateGroupBalances);
+router.route("/settleBalance").post(verifyJwt, settleBalance);
 
 module.exports = router;

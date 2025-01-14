@@ -40,6 +40,10 @@
                   ₹{{ member?.amount | number: '1.2-2' }}
                 </p>
               </ion-label>
+              <ion-label
+                (click)="onMarkAsPaid(item.creditor._id ,member.memberId._id,member.amount)"
+                >Mark as paid</ion-label
+              >
             </ion-item>
           </ng-container>
         </ion-list>
