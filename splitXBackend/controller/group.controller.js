@@ -1,6 +1,7 @@
 const Group = require("../models/groups.model.js");
 const GroupMember = require("../models/groupMembers.models.js");
 const User = require("../models/user.model.js");
+const Expense = require("../models/groupExpense.models.js");
 
 const addGroup = async (req, res) => {
   const { groupName } = req.body;
@@ -200,10 +201,46 @@ const getGroupDetails = async (req, res) => {
   res.status(200).json({ group });
 };
 
+const deleteGroup = async (req, res) => {
+  const { groupId } = req.body;
+
+  if (!groupId) {
+    return res.status(400).json({ message: "GroupId is required" });
+  }
+
+  try {
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group Not Found" });
+    }
+
+    // Delete all related group members
+    const membersResult = await GroupMember.deleteMany({ groupId });
+    console.log(`${membersResult.deletedCount} members deleted.`);
+
+    // Delete all related expenses
+    const expensesResult = await Expense.deleteMany({ groupId });
+    console.log(`${expensesResult.deletedCount} expenses deleted.`);
+
+    // Delete the group itself
+    await group.deleteOne();
+    console.log(`Group with ID ${groupId} deleted.`);
+
+    return res.status(200).json({ message: "Group deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting group:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
 module.exports = {
   addGroup,
   addMember,
   getAllMember,
   getAllGroupsOfUser,
   getGroupDetails,
+  deleteGroup,
 };

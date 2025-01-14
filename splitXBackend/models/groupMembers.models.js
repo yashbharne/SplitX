@@ -10,15 +10,6 @@ const groupMemberSchema = mongoose.Schema({
     type: mongoose.SchemaTypes.ObjectId,
     ref: "group",
   },
-  owes: {
-    type: Number,
-    default: 0,
-  },
-  borrows: {
-    type: Number,
-    default: 0,
-  },
- 
 });
 
 module.exports = mongoose.model("groupMember", groupMemberSchema);

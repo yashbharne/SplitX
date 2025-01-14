@@ -2,8 +2,8 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button
-      [defaultHref]="'/dashboard/splitgroup/' + groupId"
-    ></ion-back-button>
+        [defaultHref]="'/dashboard/splitgroup/' + groupId"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>Group Settings</ion-title>
   </ion-toolbar>
@@ -13,9 +13,6 @@
   <ion-list>
     <!-- Group Title and Edit Icon -->
     <ion-item>
-      <ion-avatar slot="start">
-        <img src="assets/group-icon.png" />
-      </ion-avatar>
       <ion-label>
         <h2>{{groupName}}</h2>
       </ion-label>
@@ -34,7 +31,7 @@
           [src]="
             member.name === userSignal.user()?.name.toLowerCase()
               ? userSignal.user()?.profilePic
-              : getAvatar(member).url
+              : getAvatar(member.name).url
           "
           alt="{{ member.name }}"
         />

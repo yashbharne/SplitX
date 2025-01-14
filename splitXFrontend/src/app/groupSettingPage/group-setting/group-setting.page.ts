@@ -141,10 +141,10 @@ export class GroupSettingPage implements OnInit {
     });
     await alert.present();
   }
-  getAvatar(member: { name: string }) {
+  getAvatar(name: string) {
     // Use the DiceBear API with a specific style
     const diceBearUrl = `https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${encodeURIComponent(
-      member.name
+      name
     )}`;
     return { url: diceBearUrl, type: 'image' };
   }
