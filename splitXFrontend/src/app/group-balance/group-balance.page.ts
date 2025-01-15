@@ -119,13 +119,14 @@ export class GroupBalancePage implements OnInit {
     };
     console.log(data);
 
-    // this.groupService.markAsPaid(data).subscribe({
-    //   next: (res: any) => {
-    //     console.log(res);
-    //   },
-    //   error: (error) => {
-    //     console.log(error);
-    //   },
-    // });
+    this.groupService.markAsPaid(data).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.getGroupBalance();
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
   }
 }

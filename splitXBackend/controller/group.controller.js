@@ -166,16 +166,18 @@ const getAllMember = async (req, res) => {
   const { groupId } = req.body;
 
   if (!groupId) {
-    res.status(400).json({ message: "GroupId is required" });
+    return res.status(400).json({ message: "GroupId is required " });
   }
+
   try {
-    const getMembers = await GroupMember.find({ groupId: groupId }).populate();
-    if (!getMembers) {
-      res.status(400).json({ message: "GroupId is required" });
+    const getMembers = await GroupMember.find({ groupId: groupId });
+    if (!getMembers || getMembers.length === 0) {
+      return res.status(400).json({ message: "No members found" });
     }
-    res.status(200).json({ getMembers });
+    return res.status(200).json({ getMembers });
   } catch (error) {
-    res.status(400).json({ message: error });
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -192,13 +194,16 @@ const getAllGroupsOfUser = async (req, res) => {
 const getGroupDetails = async (req, res) => {
   const groupId = req.params.groupId;
   if (!groupId) {
-    res.status(400).json({ message: "Group Id is required " });
+    return res.status(400).json({ message: "Group Id is required " });
   }
-  const group = await Group.findById(groupId);
+  const group = await Group.findById(groupId).populate(
+    "members.memberId",
+    "name"
+  );
   if (!group) {
-    res.status(400).json({ message: "Group not found " });
+    return res.status(400).json({ message: "Group not found " });
   }
-  res.status(200).json({ group });
+  return res.status(200).json({ group });
 };
 
 const deleteGroup = async (req, res) => {

@@ -37,7 +37,6 @@ import { GenerateAvatarService } from 'src/app/services/generate-avatar.service'
 
 interface GroupMember {
   name: string;
-  avatar?: string; // Optional if not all members have avatars
   owes: number;
   borrows: number;
 }
@@ -103,6 +102,8 @@ export class GroupSettingPage implements OnInit {
   getGroupMembers() {
     this.groupService.getAllMember({ groupId: this.groupId }).subscribe({
       next: (res: any) => {
+        console.log(res);
+
         this.groupMembers = res.getMembers as GroupMember[]; // Cast to the correct type
       },
       error: (error) => {
@@ -113,6 +114,8 @@ export class GroupSettingPage implements OnInit {
   groupDetails() {
     this.groupService.getGroupDetails(this.groupId).subscribe({
       next: (res: any) => {
+        console.log(res);
+        
         this.groupName = res.group.groupName;
       },
       error: (error) => {

@@ -1,6 +1,7 @@
 const Expense = require("../models/groupExpense.models.js"); // Assuming expense schema is in the models folder
 const Group = require("../models/groups.model.js");
 const GroupMember = require("../models/groupMembers.models.js");
+const { message } = require("prompt");
 
 const addExpense = async (req, res) => {
   const { groupId, description, amount, participants, splitType, paidBy } =
@@ -112,11 +113,12 @@ const addExpense = async (req, res) => {
       owesTo,
     });
     await expense.save();
+    const message = await calculateBalances(expense, groupId);
 
     return res.status(200).json({
       message: "Expense added successfully.",
-
       expense,
+      settlement: message,
     });
   } catch (error) {
     console.error("Error adding expense:", error);
@@ -160,169 +162,171 @@ const getExpense = async (req, res) => {
   }
 };
 
-const calculateGroupBalances = async (req, res) => {
-  const { groupId } = req.params;
+// const calculateGroupBalances = async (req, res) => {
+//   const { groupId } = req.params;
 
-  if (!groupId) {
-    return res.status(400).json({ message: "Group ID is required." });
-  }
+//   if (!groupId) {
+//     return res.status(400).json({ message: "Group ID is required." });
+//   }
 
-  try {
-    const group = await Group.findById(groupId)
-      .populate("settlement.creditor", "name") // Populate creditor's name
-      .populate("settlement.member.memberId", "name"); // Populate member's name
-    if (!group) {
-      return res.status(404).json({ message: "Group not found." });
-    }
+//   try {
+//     const group = await Group.findById(groupId)
+//       .populate("settlement.creditor", "name") // Populate creditor's name
+//       .populate("settlement.member.memberId", "name"); // Populate member's name
+//     if (!group) {
+//       return res.status(404).json({ message: "Group not found." });
+//     }
 
-    // Reset settlement balances
-    group.settlement.forEach((settlement) => {
-      settlement.creditorAmount = 0;
-      settlement.member.forEach((member) => {
-        member.amount = 0;
-      });
-    });
+//     // Reset settlement balances
+//     group.settlement.forEach((settlement) => {
+//       settlement.creditorAmount = 0;
+//       settlement.member.forEach((member) => {
+//         member.amount = 0;
+//       });
+//     });
 
-    const groupExpenses = await Expense.find({ groupId });
-    if (!groupExpenses.length) {
-      return res
-        .status(200)
-        .json({ message: "No expenses found for this group." });
-    }
+//     const groupExpenses = await Expense.find({ groupId });
+//     if (!groupExpenses.length) {
+//       return res
+//         .status(200)
+//         .json({ message: "No expenses found for this group." });
+//     }
 
-    for (const expense of groupExpenses) {
-      const { amount, participants, splitType, paidBy, splitAmount } = expense;
+//     for (const expense of groupExpenses) {
+//       const { amount, participants, splitType, paidBy, splitAmount } = expense;
 
-      for (const member of paidBy) {
-        const paidMemberId = member.id.toString();
-        const creditorMatch = group.settlement.find(
-          (settlement) => settlement.creditor._id.toString() === paidMemberId
-        );
+//       for (const member of paidBy) {
+//         const paidMemberId = member.id.toString();
+//         const creditorMatch = group.settlement.find(
+//           (settlement) => settlement.creditor._id.toString() === paidMemberId
+//         );
 
-        if (creditorMatch) {
-          console.log("Creditor Found: ", creditorMatch);
+//         if (creditorMatch) {
+//           console.log("Creditor Found: ", creditorMatch);
 
-          for (const debtor of creditorMatch.member) {
-            const debtorMemberId = debtor.memberId._id.toString();
+//           for (const debtor of creditorMatch.member) {
+//             const debtorMemberId = debtor.memberId._id.toString();
 
-            const isDebtorPresent = participants.some(
-              (participant) =>
-                participant.memberId.toString() === debtorMemberId
-            );
+//             const isDebtorPresent = participants.some(
+//               (participant) =>
+//                 participant.memberId.toString() === debtorMemberId
+//             );
 
-            if (isDebtorPresent) {
-              const reverseMatch = group.settlement.find(
-                (settlement) =>
-                  settlement.creditor._id.toString() === debtorMemberId &&
-                  settlement.member.some(
-                    (m) => m.memberId._id.toString() === paidMemberId
-                  )
-              );
+//             if (isDebtorPresent) {
+//               const reverseMatch = group.settlement.find(
+//                 (settlement) =>
+//                   settlement.creditor._id.toString() === debtorMemberId &&
+//                   settlement.member.some(
+//                     (m) => m.memberId._id.toString() === paidMemberId
+//                   )
+//               );
 
-              if (reverseMatch) {
-                const reverseMember = reverseMatch.member.find(
-                  (m) => m.memberId._id.toString() === paidMemberId
-                );
+//               if (reverseMatch) {
+//                 const reverseMember = reverseMatch.member.find(
+//                   (m) => m.memberId._id.toString() === paidMemberId
+//                 );
 
-                if (reverseMember) {
-                  let eachSplitAmount = 0;
+//                 if (reverseMember) {
+//                   let eachSplitAmount = 0;
 
-                  if (splitType === "equal") {
-                    eachSplitAmount = member.paidAmount / participants.length;
-                  } else if (splitType === "unequal") {
-                    const participant = splitAmount.find(
-                      (p) => p.memberId.toString() === debtorMemberId
-                    );
+//                   if (splitType === "equal") {
+//                     eachSplitAmount = member.paidAmount / participants.length;
+//                   } else if (splitType === "unequal") {
+//                     const participant = splitAmount.find(
+//                       (p) => p.memberId.toString() === debtorMemberId
+//                     );
 
-                    if (participant) {
-                      let share = participant.amount / amount;
-                      eachSplitAmount = member.paidAmount * share;
-                    }
-                  }
+//                     if (participant) {
+//                       let share = participant.amount / amount;
+//                       eachSplitAmount = member.paidAmount * share;
+//                     }
+//                   }
 
-                  if (reverseMember.amount === eachSplitAmount) {
-                    reverseMember.amount = 0;
-                    debtor.amount = 0;
-                  } else if (reverseMember.amount > eachSplitAmount) {
-                    const excess = reverseMember.amount - eachSplitAmount;
+//                   if (reverseMember.amount === eachSplitAmount) {
+//                     reverseMember.amount = 0;
+//                     debtor.amount = 0;
+//                   } else if (reverseMember.amount > eachSplitAmount) {
+//                     const excess = reverseMember.amount - eachSplitAmount;
 
-                    reverseMember.amount = excess;
-                    debtor.amount = 0;
-                  } else if (reverseMember.amount < eachSplitAmount) {
-                    const deficit = eachSplitAmount - reverseMember.amount;
+//                     reverseMember.amount = excess;
+//                     debtor.amount = 0;
+//                   } else if (reverseMember.amount < eachSplitAmount) {
+//                     const deficit = eachSplitAmount - reverseMember.amount;
 
-                    reverseMember.amount = 0;
-                    debtor.amount += deficit;
-                  }
-                }
-              } else {
-                console.log(
-                  "Reverse Member Not present",
-                  "paid member Id: ",
-                  paidMemberId,
-                  "reverse member Id: ",
-                  debtorMemberId
-                );
-                // for (const member of groupMembers) {
-                //   await member.save();
-                // }
-                //     settlement.creditor._id.toString() === debtorMemberId
-                // );
-                // findCreditor.member.push({ memberId: paidMemberId, amount: 0 });
-                // console.log(findCreditor);
-              }
-            } else {
-              console.log("Debtor Not Found: ", debtorMemberId);
-            }
-          }
-        }
-      }
-    }
-    const groupMembers = group.members;
+//                     reverseMember.amount = 0;
+//                     debtor.amount += deficit;
+//                   }
+//                 }
+//               } else {
+//                 console.log(
+//                   "Reverse Member Not present",
+//                   "paid member Id: ",
+//                   paidMemberId,
+//                   "reverse member Id: ",
+//                   debtorMemberId
+//                 );
+//                 // for (const member of groupMembers) {
+//                 //   await member.save();
+//                 // }
+//                 //     settlement.creditor._id.toString() === debtorMemberId
+//                 // );
+//                 // findCreditor.member.push({ memberId: paidMemberId, amount: 0 });
+//                 // console.log(findCreditor);
+//               }
+//             } else {
+//               console.log("Debtor Not Found: ", debtorMemberId);
+//             }
+//           }
+//         }
+//       }
+//     }
+//     const groupMembers = group.members;
 
-    group.settlement.forEach((settlement) => {
-      let creditorAmount = 0;
+//     group.settlement.forEach((settlement) => {
+//       let creditorAmount = 0;
 
-      const creditorId = settlement.creditor._id;
+//       const creditorId = settlement.creditor._id;
 
-      const creditorMember = groupMembers.find(
-        (member) => member._id.toString() === creditorId.toString()
-      );
+//       const creditorMember = groupMembers.find(
+//         (member) => member._id.toString() === creditorId.toString()
+//       );
 
-      settlement.member.forEach((member) => {
-        creditorAmount += member.amount;
+//       settlement.member.forEach((member) => {
+//         creditorAmount += member.amount;
 
-        const debtorMember = groupMembers.find(
-          (groupMember) =>
-            groupMember._id.toString() === member.memberId._id.toString()
-        );
+//         const debtorMember = groupMembers.find(
+//           (groupMember) =>
+//             groupMember._id.toString() === member.memberId._id.toString()
+//         );
 
-        if (debtorMember) {
-          debtorMember.owes += member.amount;
-        }
-      });
+//         if (debtorMember) {
+//           debtorMember.owes += member.amount;
+//         }
+//       });
 
-      settlement.creditorAmount = creditorAmount;
-      if (creditorMember) {
-        creditorMember.borrows += creditorAmount;
-      }
-    });
+//       settlement.creditorAmount = creditorAmount;
+//       if (creditorMember) {
+//         creditorMember.borrows += creditorAmount;
+//       }
+//     });
 
-    await group.save();
+//     await group.save();
 
-    res.status(200).json({
-      message: "Group balances updated.",
-      settlement: group.settlement,
-      groupId: groupId,
-    });
-  } catch (error) {
-    console.error("Error calculating group balances:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+//     res.status(200).json({
+//       message: "Group balances updated.",
+//       settlement: group.settlement,
+//       groupId: groupId,
+//     });
+//   } catch (error) {
+//     console.error("Error calculating group balances:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
 
 const settleBalance = async (req, res) => {
-  const { groupId, amount, creditorId, debtorId } = req.body;
+  console.log(req.body);
+
+  const { groupId, amount, creditorId, debtorId } = req.body.data;
 
   console.log(
     "groupId: ",
@@ -379,19 +383,23 @@ const settleBalance = async (req, res) => {
     settlementEntry.creditorAmount -= amount;
     debtorEntry.amount -= amount;
 
-    // Create a response with only the relevant creditor and debtor details
-    const markAsPaid = {
-      creditor: settlementEntry.creditor,
-      creditorAmount: settlementEntry.creditorAmount,
-      member: [debtorEntry], // Include only the relevant debtor
-    };
+    const creditorBorrows = group.members.find(
+      (member) => member._id.toString() === creditorId
+    );
+    console.log("borrows", creditorBorrows);
+    creditorBorrows.borrows -= amount;
+
+    const memberOwes = group.members.find(
+      (member) => member._id.toString() === debtorId
+    );
+    memberOwes.owes -= amount;
+
+    console.log("owes", memberOwes);
 
     //Save the group after changes
     await group.save();
 
-    return res
-      .status(200)
-      .json({ message: "Balance settled successfully", markAsPaid });
+    return res.status(200).json({ message: "Balance settled successfully" });
   } catch (error) {
     console.error("Error in settleBalance:", error);
     return res
@@ -400,12 +408,345 @@ const settleBalance = async (req, res) => {
   }
 };
 
+const getGroupBalance = async (req, res) => {
+  const { groupId } = req.params;
+  if (!groupId) {
+    return res.status(400).json({ message: "Group ID is required" });
+  }
+  try {
+    const group = await Group.findById(groupId)
+      .populate("settlement.creditor", "name") // Populate creditor's name
+      .populate("settlement.member.memberId", "name"); // Populate member's name;
+    if (!group) {
+      return res.status(400).json({ message: "Group not found" });
+    }
+    console.log(group);
+
+    return res.status(200).json({
+      settlement: group.settlement,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error: ", error });
+  }
+};
+
+const updateExpense = async (req, res) => {
+  const {
+    groupId,
+    description,
+    amount,
+    participants,
+    splitType,
+    paidBy,
+    expenseId,
+  } = req.body;
+
+  if (
+    !groupId ||
+    !description ||
+    !amount ||
+    !Array.isArray(participants) ||
+    !participants.length ||
+    !splitType ||
+    !Array.isArray(paidBy) ||
+    !paidBy.length
+  ) {
+    return res
+      .status(400)
+      .json({ message: "All fields are required and must be valid." });
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    return res
+      .status(400)
+      .json({ message: "Amount must be a positive number." });
+  }
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    return res.status(404).json({ message: "Group not found." });
+  }
+
+  try {
+    // Fetch the existing expense
+    const existingExpense = await Expense.findById(expenseId);
+    if (!existingExpense) {
+      return res.status(404).json({ message: "Expense not found." });
+    }
+
+    existingExpense.paidBy.forEach((memberPaid) => {
+      const payerId = memberPaid.id;
+      console.log("PayerID ", payerId);
+
+      const payerMatchInGroup = group.settlement.find(
+        (member) => member.creditor.toString() === payerId.toString()
+      );
+      console.log(payerMatchInGroup);
+      if (payerMatchInGroup) {
+        if (existingExpense.splitType === "equal") {
+          payerMatchInGroup.member.forEach((member) => {
+            const split =
+              memberPaid.paidAmount / existingExpense.participants.length;
+            if (
+              member.memberId.toString() !==
+              payerMatchInGroup.creditor.toString()
+            ) {
+              member.amount -= split;
+            }
+          });
+          console.log("After calculation: ", payerMatchInGroup);
+        } else if (existingExpense.splitType === "unequal") {
+          payerMatchInGroup.member.forEach((member) => {
+            let share = member.amount / existingExpense.amount;
+            const split = memberPaid.paidAmount * share;
+            if (
+              member.memberId.toString() !==
+              payerMatchInGroup.creditor.toString()
+            ) {
+              member.amount -= split;
+            }
+          });
+          console.log("After calculation: ", payerMatchInGroup);
+        }
+      }
+    });
+    await group.save();
+
+    const totalPaid = paidBy.reduce(
+      (sum, member) => sum + (member.paidAmount || 0),
+      0
+    );
+
+    if (totalPaid !== amount) {
+      return res.status(400).json({
+        message: `The total paid amount (${totalPaid}) does not match the total expense amount (${amount}).`,
+      });
+    }
+
+    if (splitType === "unequal") {
+      let sum = 0;
+      participants.forEach((p) => (sum += p.amount));
+      if (sum !== amount) {
+        return res.status(400).json({
+          message: `The total paid amount (${amount}) does not match the unequal split amount (${sum}).`,
+        });
+      }
+    }
+
+    // Validate participants exist in the group
+    const participantIds = participants.map((p) => p.memberId);
+    const members = await GroupMember.find({
+      groupId,
+      _id: { $in: participantIds },
+    });
+
+    if (members.length !== participants.length) {
+      return res.status(400).json({
+        message: "Some participants are not valid members of the group.",
+      });
+    }
+
+    // Calculate split amounts
+    const splitAmount = [];
+    const owesTo = [];
+    const memberBalances = {};
+
+    if (splitType === "equal") {
+      const individualSplitAmount = parseFloat(
+        (amount / participants.length).toFixed(2)
+      );
+
+      participants.forEach((member) => {
+        splitAmount.push({
+          memberId: member.memberId,
+          memberName: member.name,
+          amount: individualSplitAmount,
+        });
+
+        memberBalances[member.memberId] = -individualSplitAmount;
+      });
+    } else if (splitType === "unequal") {
+      participants.forEach((p) => {
+        splitAmount.push({
+          memberId: p.memberId,
+          memberName: p.name,
+          amount: p.amount,
+        });
+
+        memberBalances[p.memberId] = -p.amount;
+      });
+    }
+
+    // Update the existing expense with new data
+    existingExpense.groupId = groupId;
+    existingExpense.description = description;
+    existingExpense.amount = amount;
+    existingExpense.paidBy = paidBy;
+    existingExpense.participants = participants;
+    existingExpense.splitType = splitType;
+    existingExpense.splitAmount = splitAmount;
+    existingExpense.owesTo = owesTo;
+
+    // Save the updated expense
+     await existingExpense.save();
+
+    // Recalculate balances
+     const message = await calculateBalances(existingExpense, groupId);
+
+    return res.status(200).json({
+      message: "Expense updated successfully.",
+      expense: existingExpense,
+      settlement: message,
+    });
+  } catch (error) {
+    console.error("Error updating expense:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+async function calculateBalances(expense, groupId) {
+  const groupExpenses = expense;
+
+  if (!groupId) {
+    return { message: "Group ID is required." };
+  }
+
+  try {
+    const group = await Group.findById(groupId)
+      .populate("settlement.creditor", "name") // Populate creditor's name
+      .populate("settlement.member.memberId", "name"); // Populate member's name
+    if (!group) {
+      return { message: "Group not found." };
+    }
+
+    const { amount, participants, splitType, paidBy, splitAmount } =
+      groupExpenses;
+
+    for (const member of paidBy) {
+      const paidMemberId = member.id.toString();
+      const creditorMatch = group.settlement.find(
+        (settlement) => settlement.creditor._id.toString() === paidMemberId
+      );
+
+      if (creditorMatch) {
+        for (const debtor of creditorMatch.member) {
+          const debtorMemberId = debtor.memberId._id.toString();
+          const isDebtorPresent = participants.some(
+            (participant) => participant.memberId.toString() === debtorMemberId
+          );
+
+          if (isDebtorPresent) {
+            const reverseMatch = group.settlement.find(
+              (settlement) =>
+                settlement.creditor._id.toString() === debtorMemberId &&
+                settlement.member.some(
+                  (m) => m.memberId._id.toString() === paidMemberId
+                )
+            );
+
+            if (reverseMatch) {
+              const reverseMember = reverseMatch.member.find(
+                (m) => m.memberId._id.toString() === paidMemberId
+              );
+
+              if (reverseMember) {
+                let eachSplitAmount = 0;
+
+                if (splitType === "equal") {
+                  eachSplitAmount = member.paidAmount / participants.length;
+                } else if (splitType === "unequal") {
+                  const participant = splitAmount.find(
+                    (p) => p.memberId.toString() === debtorMemberId
+                  );
+
+                  if (participant) {
+                    let share = participant.amount / amount;
+                    eachSplitAmount = member.paidAmount * share;
+                  }
+                }
+
+                if (reverseMember.amount === eachSplitAmount) {
+                  reverseMember.amount = 0;
+                  debtor.amount = 0;
+                } else if (reverseMember.amount > eachSplitAmount) {
+                  const excess = reverseMember.amount - eachSplitAmount;
+
+                  reverseMember.amount = excess;
+                  debtor.amount = 0;
+                } else if (reverseMember.amount < eachSplitAmount) {
+                  const deficit = eachSplitAmount - reverseMember.amount;
+
+                  reverseMember.amount = 0;
+                  debtor.amount += deficit;
+                }
+              }
+            } else {
+              console.log(
+                "Reverse Member Not present",
+                "paid member Id: ",
+                paidMemberId,
+                "reverse member Id: ",
+                debtorMemberId
+              );
+            }
+          } else {
+            console.log("Debtor Not Found: ", debtorMemberId);
+          }
+        }
+      }
+    }
+
+    const groupMembers = group.members;
+
+    group.settlement.forEach((settlement) => {
+      let creditorAmount = 0;
+
+      const creditorId = settlement.creditor._id;
+
+      const creditorMember = groupMembers.find(
+        (member) => member._id.toString() === creditorId.toString()
+      );
+
+      settlement.member.forEach((member) => {
+        creditorAmount += member.amount;
+
+        const debtorMember = groupMembers.find(
+          (groupMember) =>
+            groupMember._id.toString() === member.memberId._id.toString()
+        );
+
+        if (debtorMember) {
+          debtorMember.owes += member.amount;
+        }
+      });
+
+      settlement.creditorAmount = creditorAmount;
+      if (creditorMember) {
+        creditorMember.borrows += creditorAmount;
+      }
+    });
+
+    await group.save();
+
+    return {
+      message: "Group balances updated.",
+      settlement: group.settlement,
+    };
+  } catch (error) {
+    console.error("Error calculating group balances:", error);
+    return { message: "Server error", error: error.message };
+  }
+}
+
 // Example usage:
 
 module.exports = {
   addExpense,
   getAllGroupExpenses,
   getExpense,
-  calculateGroupBalances,
+  updateExpense,
   settleBalance,
+  getGroupBalance,
 };

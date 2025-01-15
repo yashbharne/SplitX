@@ -11,13 +11,21 @@ export class GroupExpenseService {
   addExpense(data: any): Observable<any> {
     return this.httpService.securedPost('api/groupExpense/addExpense', data);
   }
+  updateExpense(data: any): Observable<any> {
+    return this.httpService.securedPatch(
+      'api/groupExpense/updateExpense',
+      data
+    );
+  }
 
   getExpensesOfGroup(groupId: string): Observable<any> {
     return this.httpService.securedGet(
       `api/groupExpense/getAllGroupExpense/${groupId}`
     );
   }
-  getExpense(expenseId:string):Observable<any>{
-    return this.httpService.securedGet(`api/groupExpense/getExpense/${expenseId}`);
+  getExpense(expenseId: string): Observable<any> {
+    return this.httpService.securedGet(
+      `api/groupExpense/getExpense/${expenseId}`
+    );
   }
 }

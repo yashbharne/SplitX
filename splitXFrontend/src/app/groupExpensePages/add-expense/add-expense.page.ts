@@ -29,9 +29,10 @@ import { addIcons } from 'ionicons';
 import { checkmarkOutline } from 'ionicons/icons';
 import { GroupExpenseService } from 'src/app/services/group-expense.service';
 import { GroupsService } from 'src/app/services/groups.service';
+import { SendingReceivingDataService } from 'src/app/services/sending-receiving-data.service';
 
 interface GroupMember {
-  id: string;
+  _id: string;
   name: string;
 
   paidAmount?: number; // For "Paid by multiple"
@@ -78,12 +79,15 @@ export class AddExpensePage implements OnInit {
 
   groupMembers: GroupMember[] = [];
   groupId: string = '';
+  callFrom: string = '';
+  expenseData: any = {};
 
   constructor(
     private router: Router,
     private routes: ActivatedRoute,
     private group: GroupsService,
-    private groupExpense: GroupExpenseService
+    private groupExpense: GroupExpenseService,
+    private sendingReceivingData: SendingReceivingDataService
   ) {
     addIcons({ checkmarkOutline });
   }
@@ -92,7 +96,11 @@ export class AddExpensePage implements OnInit {
     this.routes.params.subscribe((params) => {
       this.groupId = params['groupId'];
     });
+
     this.getAllMembers();
+
+    this.expenseData = this.sendingReceivingData.getData();
+    this.callFrom = this.sendingReceivingData.callFrom;
   }
 
   getTitle(): string {
@@ -126,7 +134,7 @@ export class AddExpensePage implements OnInit {
     if (this.isMultiplePayers) {
       return 'Multiple';
     }
-    const payer = this.groupMembers.find((m) => m.id === this.selectedPayer);
+    const payer = this.groupMembers.find((m) => m._id === this.selectedPayer);
     return payer ? payer.name : '';
   }
 
@@ -154,7 +162,7 @@ export class AddExpensePage implements OnInit {
       ? this.groupMembers
           .filter((m) => m.paidAmount && m.paidAmount > 0)
           .map((m) => ({
-            id: m.id,
+            id: m._id,
             name: m.name,
             paidAmount: m.paidAmount,
           }))
@@ -162,7 +170,7 @@ export class AddExpensePage implements OnInit {
           {
             id: this.selectedPayer,
             name:
-              this.groupMembers.find((m) => m.id === this.selectedPayer)
+              this.groupMembers.find((m) => m._id === this.selectedPayer)
                 ?.name || 'Unknown',
             paidAmount: this.amount,
           },
@@ -171,7 +179,7 @@ export class AddExpensePage implements OnInit {
     const participants = this.groupMembers
       .filter((m) => m.isSelected || this.splitType === 'unequal')
       .map((m) => ({
-        memberId: m.id,
+        memberId: m._id,
         name: m.name,
         amount:
           this.splitType === 'unequal' && m.splitAmount !== undefined
@@ -186,19 +194,34 @@ export class AddExpensePage implements OnInit {
       splitType: this.splitType,
       paidBy,
       participants,
+      expenseId: this.callFrom ? this.expenseData._id : '',
     };
 
-    console.log('Expense Payload:', expensePayload);
+    
+    if (this.callFrom) {
+      console.log('In Edit Expense');
+      console.log('Expense Payload:', expensePayload);
+      
 
-    this.groupExpense.addExpense(expensePayload).subscribe({
-      next: (res: any) => {
-        console.log('Expense added successfully:', res);
-        this.router.navigateByUrl(`/dashboard/splitgroup/${this.groupId}`);
-      },
-      error: (error) => {
-        console.error('Error adding expense:', error);
-      },
-    });
+      this.groupExpense.updateExpense(expensePayload).subscribe({
+        next: (res: any) => {
+          console.log(res);
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+    } else {
+      this.groupExpense.addExpense(expensePayload).subscribe({
+        next: (res: any) => {
+          console.log('Expense added successfully:', res);
+          this.router.navigateByUrl(`/dashboard/splitgroup/${this.groupId}`);
+        },
+        error: (error) => {
+          console.error('Error adding expense:', error);
+        },
+      });
+    }
   }
 
   getAllMembers() {
@@ -207,16 +230,86 @@ export class AddExpensePage implements OnInit {
         console.log(res);
         for (let index = 0; index < res.getMembers.length; index++) {
           this.groupMembers.push({
-            id: res.getMembers[index]._id,
+            _id: res.getMembers[index]._id,
             name: res.getMembers[index].name,
             paidAmount: 0,
             isSelected: true,
           });
+          if (this.callFrom === 'editExpense' && this.expenseData) {
+            this.fillEditData(this.expenseData);
+          }
         }
       },
       error: (error) => {
         console.log(error);
       },
     });
+  }
+
+  checkForEditing() {
+    this.callFrom = this.sendingReceivingData.callFrom;
+    if (this.callFrom === 'editExpense') {
+    }
+  }
+  fillEditData(expense: any) {
+    console.log('In FillEdit');
+
+    this.description = expense.description;
+    this.amount = expense.amount;
+    this.splitType = expense.splitType;
+    this.isMultiplePayers = expense.paidBy.length > 1;
+    console.log(this.splitType);
+
+    if (this.isMultiplePayers) {
+      this.groupMembers = this.groupMembers.map((member) => {
+        const payer = expense.paidBy.find((p: any) => p.id === member._id);
+        return {
+          ...member,
+          paidAmount: payer ? payer.paidAmount : 0,
+        };
+      });
+    } else if (expense.paidBy.length === 1) {
+      this.selectedPayer = expense.paidBy[0].id;
+    }
+
+    if (this.splitType === 'equal') {
+      console.log('In equal', this.groupMembers);
+
+      this.groupMembers = this.groupMembers.map((member) => ({
+        ...member,
+        isSelected: expense.participants.some(
+          (participant: any) => participant.memberId === member._id
+        ),
+      }));
+      console.log(this.groupMembers);
+    } else if (this.splitType === 'unequal') {
+      console.log('In unequal');
+
+      // Check if splitAmount exists and has the expected structure
+      console.log('Split Amount:', expense.splitAmount);
+
+      if (Array.isArray(expense.splitAmount)) {
+        console.log('In array');
+        console.log(this.groupMembers);
+
+        this.groupMembers = this.groupMembers.map((member) => {
+          console.log('member', member);
+
+          const split = expense.splitAmount.find(
+            (s: any) => s.memberId === member._id // Ensure member IDs match properly
+          );
+          console.log(split);
+
+          return {
+            ...member,
+            splitAmount: split ? split.amount : 0, // Use split amount if found
+          };
+        });
+      } else {
+        console.error('Invalid splitAmount data:', expense.splitAmount);
+      }
+
+      console.log(this.groupMembers);
+    }
   }
 }

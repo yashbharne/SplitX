@@ -21,12 +21,12 @@ import {
   receiptOutline,
   settings,
   closeCircle,
-  camera,
-  calculatorOutline,
+  createOutline,
 } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GroupsService } from 'src/app/services/groups.service';
 import { GroupExpenseService } from 'src/app/services/group-expense.service';
+import { SendingReceivingDataService } from 'src/app/services/sending-receiving-data.service';
 
 @Component({
   selector: 'app-splitgroup',
@@ -58,7 +58,8 @@ export class SplitgroupPage implements OnInit {
     private router: Router,
     private routes: ActivatedRoute,
     private group: GroupsService,
-    private groupExpense: GroupExpenseService
+    private groupExpense: GroupExpenseService,
+    private sendingReceivingData: SendingReceivingDataService
   ) {}
 
   addmembers: any[] = [];
@@ -77,7 +78,13 @@ export class SplitgroupPage implements OnInit {
     this.getGroupDetails();
     this.getAllMembers();
     this.getExpenseOfGroup();
-    addIcons({ receiptOutline, settings, arrowBackCircle, closeCircle });
+    addIcons({
+      receiptOutline,
+      settings,
+      arrowBackCircle,
+      closeCircle,
+      createOutline,
+    });
   }
   onBack() {
     this.router.navigateByUrl('/dashboard/group');
@@ -174,5 +181,11 @@ export class SplitgroupPage implements OnInit {
   }
   onCalculateBalance() {
     this.router.navigateByUrl(`/group-balance/${this.groupId}`);
+  }
+  onEditExpense(expense: any) {
+    console.log(expense);
+
+    this.sendingReceivingData.setData(expense, 'editExpense');
+    this.router.navigateByUrl(`/add-expense/${this.groupId}`);
   }
 }

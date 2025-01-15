@@ -188,7 +188,6 @@
       </ion-button>
     </ion-buttons>
   </div>
-
   <div style="padding: 20px; margin-top: 20px">
     <h3>Expenses</h3>
     <div
@@ -198,26 +197,41 @@
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 15px;
+        position: relative;
       "
-      (click)="onGetExpense(expense._id)"
     >
-      <ion-list>
+      <ion-list (click)="onGetExpense(expense._id)">
         <ion-list-header>
-          <ion-label>{{expense.createdAt| date}}</ion-label>
+          <ion-label>{{ expense.createdAt | date }}</ion-label>
         </ion-list-header>
 
         <ion-item>
           <ion-icon name="receipt-outline" slot="start"></ion-icon>
           <ion-label>
-            <h2>{{expense.description}}</h2>
+            <h2>{{ expense.description }}</h2>
             <div *ngFor="let paidBy of expense.paidBy">
               <p>
-                {{paidBy.name}} paid {{paidBy.paidAmount| currency:'INR':true}}
+                {{ paidBy.name }} paid {{ paidBy.paidAmount | currency: 'INR':
+                true }}
               </p>
             </div>
           </ion-label>
         </ion-item>
       </ion-list>
+
+      <!-- Edit Button -->
+      <ion-icon
+        name="create-outline"
+        style="
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          cursor: pointer;
+          font-size: 20px;
+          color: #007bff;
+        "
+        (click)="onEditExpense(expense)"
+      ></ion-icon>
     </div>
   </div>
 

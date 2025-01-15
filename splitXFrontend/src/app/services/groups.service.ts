@@ -29,7 +29,10 @@ export class GroupsService {
       `api/groupExpense/getGroupBalance/${groupId}`
     );
   }
+ 
   markAsPaid(data: any): Observable<any> {
-    return this.httpService.securedPost(`api/groupExpense/settleBalance`);
+    return this.httpService.securedPost(`api/groupExpense/settleBalance`, {
+      data,
+    });
   }
 }

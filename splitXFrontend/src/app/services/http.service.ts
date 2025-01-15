@@ -137,4 +137,25 @@ export class HttpService {
         });
     });
   }
+  securedPatch(url: string, data: any = {}): Observable<any> {
+    return new Observable((observer) => {
+      this.originalRequest = {
+        method: 'PATCH',
+        body: data,
+        url: `${this.httpUri}/${url}`,
+      };
+      this.http
+        .patch(`${this.httpUri}/${url}`, data, {
+          headers: this.getHeaders(),
+          withCredentials: true,
+        })
+        .subscribe({
+          next: (res) => observer.next(res),
+          error: (err) => {
+            this.handleError(err).subscribe(observer);
+          },
+          complete: () => observer.complete(),
+        });
+    });
+  }
 }

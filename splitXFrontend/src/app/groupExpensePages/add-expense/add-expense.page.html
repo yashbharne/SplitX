@@ -58,7 +58,7 @@
           <img [src]="member.avatar" alt="avatar" />
         </ion-avatar> -->
         <ion-label>{{ member.name }}</ion-label>
-        <ion-radio [value]="member.id" slot="end"></ion-radio>
+        <ion-radio [value]="member._id" slot="end"></ion-radio>
       </ion-item>
     </ion-radio-group>
     <ion-list *ngIf="isMultiplePayers">
