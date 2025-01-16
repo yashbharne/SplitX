@@ -28,4 +28,10 @@ export class GroupExpenseService {
       `api/groupExpense/getExpense/${expenseId}`
     );
   }
+
+  deleteExpense(expenseId: string): Observable<any> {
+    return this.httpService.securedDelete(
+      `api/groupExpense/deleteExpense/${expenseId}`
+    );
+  }
 }

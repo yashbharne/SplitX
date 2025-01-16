@@ -1,7 +1,6 @@
 const Expense = require("../models/groupExpense.models.js"); // Assuming expense schema is in the models folder
 const Group = require("../models/groups.model.js");
 const GroupMember = require("../models/groupMembers.models.js");
-const { message } = require("prompt");
 
 const addExpense = async (req, res) => {
   const { groupId, description, amount, participants, splitType, paidBy } =
@@ -220,7 +219,7 @@ const settleBalance = async (req, res) => {
     }
 
     settlementEntry.creditorAmount -= amount;
-    debtorEntry.amount = 0;
+    debtorEntry.amount -= amount;
 
     //Save the group after changes
     await group.save();
@@ -299,14 +298,15 @@ const updateExpense = async (req, res) => {
     if (!existingExpense) {
       return res.status(404).json({ message: "Expense not found." });
     }
-    console.log("Expense: ", existingExpense);
 
     existingExpense.paidBy.forEach((memberPaid) => {
       const payerId = memberPaid.id;
+      console.log("PayerID ", payerId);
+
       const payerMatchInGroup = group.settlement.find(
         (member) => member.creditor.toString() === payerId.toString()
       );
-      console.log("payerMatch: ", payerMatchInGroup);
+      console.log(payerMatchInGroup);
       if (payerMatchInGroup) {
         if (existingExpense.splitType === "equal") {
           payerMatchInGroup.member.forEach((member) => {
@@ -340,32 +340,33 @@ const updateExpense = async (req, res) => {
           });
           console.log("After calculation: ", payerMatchInGroup);
         } else if (existingExpense.splitType === "unequal") {
-          console.log("unequal");
-
           payerMatchInGroup.member.forEach((member) => {
-            console.log("Member of creditor: ", member);
-            console.log("existing: ", existingExpense.amount);
-
-            let existingMemberSplitAmount = existingExpense.splitAmount.find(
-              (exMember) =>
-                exMember.memberId.toString() === member.memberId.toString()
-            ).amount;
-            let share = existingMemberSplitAmount / existingExpense.amount;
+            let share = member.amount / existingExpense.amount;
             const split = memberPaid.paidAmount * share;
-            console.log("unequal split ", split);
-
             if (
               member.memberId.toString() !==
               payerMatchInGroup.creditor.toString()
             ) {
-              console.log("In Match");
-
               payerMatchInGroup.creditorAmount -= member.amount;
-              console.log("member.amount before ", member.amount);
               member.amount -= split;
-              console.log("member.amount after ", member.amount);
-
-              //
+              if (member.amount < 0) {
+                const reverseCreditor = group.settlement.find(
+                  (revCred) =>
+                    revCred.creditor.toString() === member.memberId.toString()
+                );
+                if (reverseCreditor) {
+                  reverseCreditor.creditorAmount += -member.amount;
+                  const revDebtor = reverseCreditor.member.find(
+                    (revDebt) =>
+                      revDebt.memberId.toString() ===
+                      payerMatchInGroup.creditor.toString()
+                  );
+                  if (revDebtor) {
+                    revDebtor.amount += -member.amount;
+                  }
+                }
+                member.amount = 0;
+              }
             }
           });
           console.log("After calculation: ", payerMatchInGroup);
@@ -583,11 +584,15 @@ async function calculateBalances(expense, groupId) {
   }
 }
 
-async function settleExistingBalance({ expenseId }) {
+const deleteExpense = async (req, res) => {
+  const { expenseId } = req.params;
+  if (!expenseId) {
+    return res.status(400).json({ message: "expenseId Is required" });
+  }
   try {
     const existingExpense = await Expense.findById(expenseId);
     if (!existingExpense) {
-      throw new Error("Expense Not Found");
+      return res.status(404).json({ message: "Expense not found." });
     }
     const group = await Group.findById(existingExpense.groupId);
     existingExpense.paidBy.forEach((memberPaid) => {
@@ -602,34 +607,27 @@ async function settleExistingBalance({ expenseId }) {
         if (existingExpense.splitType === "equal") {
           payerMatchInGroup.member.forEach((member) => {
             const split =
-              parseFloat(memberPaid.paidAmount) /
-              parseFloat(existingExpense.participants.length);
+              memberPaid.paidAmount / existingExpense.participants.length;
             if (
               member.memberId.toString() !==
               payerMatchInGroup.creditor.toString()
             ) {
-              payerMatchInGroup.creditorAmount =
-                parseFloat(payerMatchInGroup.creditorAmount) -
-                parseFloat(member.amount);
-              member.amount = parseFloat(member.amount) - parseFloat(split);
+              payerMatchInGroup.creditorAmount -= member.amount;
+              member.amount -= split;
               if (member.amount < 0) {
                 const reverseCreditor = group.settlement.find(
                   (revCred) =>
                     revCred.creditor.toString() === member.memberId.toString()
                 );
                 if (reverseCreditor) {
-                  reverseCreditor.creditorAmount =
-                    parseFloat(reverseCreditor.creditorAmount) +
-                    parseFloat(-member.amount);
-                  console.log("revCred: ", reverseCreditor.creditorAmount);
-
+                  reverseCreditor.creditorAmount += -member.amount;
                   const revDebtor = reverseCreditor.member.find(
                     (revDebt) =>
                       revDebt.memberId.toString() ===
                       payerMatchInGroup.creditor.toString()
                   );
                   if (revDebtor) {
-                    revDebtor.amount += parseFloat(-member.amount);
+                    revDebtor.amount += -member.amount;
                   }
                 }
                 member.amount += member.amount;
@@ -638,61 +636,33 @@ async function settleExistingBalance({ expenseId }) {
           });
           console.log("After calculation: ", payerMatchInGroup);
         } else if (existingExpense.splitType === "unequal") {
-          console.log("unequal");
-
           payerMatchInGroup.member.forEach((member) => {
-            console.log("Member of creditor: ", member);
-            console.log("existing: ", existingExpense.amount);
-
-            let existingMemberSplitAmount = existingExpense.splitAmount.find(
-              (exMember) =>
-                exMember.memberId.toString() === member.memberId.toString()
-            ).amount;
-            let share =
-              parseFloat(existingMemberSplitAmount) /
-              parseFloat(existingExpense.amount);
-            console.log("Share ", share);
-
+            let share = member.amount / existingExpense.amount;
             const split = memberPaid.paidAmount * share;
-            console.log("split ", split);
-
             if (
               member.memberId.toString() !==
               payerMatchInGroup.creditor.toString()
             ) {
-              console.log("In Match");
-
-              payerMatchInGroup.creditorAmount -= parseFloat(member.amount);
-              console.log("member.amount before ", member.amount);
-              member.amount -= parseFloat(split);
-              console.log("member.amount after ", member.amount);
+              payerMatchInGroup.creditorAmount -= member.amount;
+              member.amount -= split;
               if (member.amount < 0) {
                 const reverseCreditor = group.settlement.find(
                   (revCred) =>
                     revCred.creditor.toString() === member.memberId.toString()
                 );
                 if (reverseCreditor) {
-                  reverseCreditor.creditorAmount =
-                    parseFloat(reverseCreditor.creditorAmount) +
-                    parseFloat(-member.amount);
-                  console.log(reverseCreditor.creditorAmount);
-                  console.log();
-
+                  reverseCreditor.creditorAmount += -member.amount;
                   const revDebtor = reverseCreditor.member.find(
                     (revDebt) =>
                       revDebt.memberId.toString() ===
                       payerMatchInGroup.creditor.toString()
                   );
                   if (revDebtor) {
-                    revDebtor.amount =
-                      parseFloat(revDebtor.amount) + parseFloat(-member.amount);
-                    console.log("revDeb: ", revDebtor.amount);
+                    revDebtor.amount += -member.amount;
                   }
                 }
-                member.amount = 0;
+                member.amount += member.amount;
               }
-
-              //
             }
           });
           console.log("After calculation: ", payerMatchInGroup);
@@ -701,23 +671,6 @@ async function settleExistingBalance({ expenseId }) {
     });
 
     await group.save();
-  } catch (error) {
-    throw new Error({
-      message: "Something went wrong while resetting expense: ",
-      error,
-    });
-  }
-}
-
-const deleteExpense = async (req, res) => {
-  const { expenseId } = req.params;
-  if (!expenseId) {
-    return res.status(400).json({ message: "expenseId Is required" });
-  }
-  try {
-    const resettle = await settleExistingBalance({ expenseId });
-    console.log(resettle);
-
     const deleteExpense = await Expense.findByIdAndDelete(expenseId);
     if (!deleteExpense) {
       return res

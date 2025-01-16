@@ -10,14 +10,6 @@ const groupSchema = mongoose.Schema({
   members: [
     {
       memberId: { type: mongoose.Schema.Types.ObjectId, ref: "groupMember" },
-      owes: {
-        type: Number,
-        default: 0,
-      },
-      borrows: {
-        type: Number,
-        default: 0,
-      },
     },
   ],
   settlement: [

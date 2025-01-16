@@ -158,4 +158,25 @@ export class HttpService {
         });
     });
   }
+  securedDelete(url: string, data: any = {}): Observable<any> {
+    return new Observable((observer) => {
+      this.originalRequest = {
+        method: 'DELETE',
+        body: data,
+        url: `${this.httpUri}/${url}`,
+      };
+      this.http
+        .delete(`${this.httpUri}/${url}`, {
+          headers: this.getHeaders(),
+          withCredentials: true,
+        })
+        .subscribe({
+          next: (res) => observer.next(res),
+          error: (err) => {
+            this.handleError(err).subscribe(observer);
+          },
+          complete: () => observer.complete(),
+        });
+    });
+  }
 }

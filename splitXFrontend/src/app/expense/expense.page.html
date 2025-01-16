@@ -1,9 +1,17 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button>Back</ion-back-button>
+      <ion-back-button></ion-back-button>
     </ion-buttons>
-    <!-- <ion-title>{{ expenseData?.description }}</ion-title> -->
+    <ion-buttons slot="end">
+      <ion-button (click)="onDeleteExpense()">
+        <ion-icon
+          color="danger"
+          slot="icon-only"
+          name="trash-bin"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

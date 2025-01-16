@@ -8,6 +8,7 @@ const {
   settleBalance,
   updateExpense,
   getGroupBalance,
+  deleteExpense,
 } = require("../controller/groupExpense.controller.js");
 
 router.route("/addExpense").post(verifyJwt, addExpense);
@@ -18,5 +19,6 @@ router.route("/getExpense/:expenseId").get(verifyJwt, getExpense);
 router.route("/getGroupBalance/:groupId").get(verifyJwt, getGroupBalance);
 router.route("/settleBalance").post(verifyJwt, settleBalance);
 router.route("/updateExpense").patch(verifyJwt, updateExpense);
+router.route("/deleteExpense/:expenseId").delete(verifyJwt, deleteExpense);
 
 module.exports = router;
