@@ -16,4 +16,9 @@ export class SendingReceivingDataService {
   getData() {
     return this.data;
   }
+
+  clearData() {
+    this.callFrom = '';
+    this.data = {};
+  }
 }

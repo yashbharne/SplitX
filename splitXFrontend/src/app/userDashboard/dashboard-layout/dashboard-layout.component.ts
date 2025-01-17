@@ -7,7 +7,6 @@ import {
   IonLabel,
   IonIcon,
   IonContent,
- 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -17,7 +16,7 @@ import {
   personCircleOutline,
   personOutline,
 } from 'ionicons/icons';
-import { UserSignalService } from 'src/app/services/user-signal.service';
+import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -25,7 +24,6 @@ import { UserSignalService } from 'src/app/services/user-signal.service';
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss'],
   imports: [
-    
     IonContent,
     IonIcon,
     IonLabel,

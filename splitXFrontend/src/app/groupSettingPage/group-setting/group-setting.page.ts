@@ -31,9 +31,9 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { ActivatedRoute } from '@angular/router';
-import { GroupsService } from 'src/app/services/groups.service';
-import { UserSignalService } from 'src/app/services/user-signal.service';
-import { GenerateAvatarService } from 'src/app/services/generate-avatar.service';
+import { GroupsService } from 'src/app/services/groupService/groups.service';
+import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
+import { GenerateAvatarService } from 'src/app/services/generateAvtar/generate-avatar.service';
 
 interface GroupMember {
   name: string;
@@ -115,7 +115,7 @@ export class GroupSettingPage implements OnInit {
     this.groupService.getGroupDetails(this.groupId).subscribe({
       next: (res: any) => {
         console.log(res);
-        
+
         this.groupName = res.group.groupName;
       },
       error: (error) => {
@@ -136,8 +136,16 @@ export class GroupSettingPage implements OnInit {
         {
           text: 'Delete',
           handler: () => {
+            this.groupService.deleteGroup(this.groupId).subscribe({
+              next: (res: any) => {
+                console.log(res);
+                this.navCtrl.navigateBack('/dashboard/group');
+              },
+              error: (error: any) => {
+                console.log(error);
+              },
+            });
             console.log('Group deleted');
-            this.navCtrl.navigateBack('/home');
           },
         },
       ],

@@ -8,9 +8,7 @@
   <p
     class="ion-text-center ion-margin-horizontal ion-margin-vertical"
     style="font-size: 1.2rem; color: #555"
-  >
-    You are all settled up!
-  </p>
+  ></p>
   <div *ngIf="listOfGroup.length === 0; else friendsList">
     <div class="empty-state">
       <div style="text-align: center" *ngIf="listOfGroup.length === 0">
@@ -47,10 +45,13 @@
               object-fit: cover;
             "
           >
-            <img [src]="getAvatar(group)" alt="Group Image" />
+            <img
+              [src]="group.groupProfilePic ? group.groupProfilePic : getAvatar(group)"
+              alt="Group Image"
+            />
           </ion-avatar>
           <ion-label>
-            <h2>{{ group?.groupName }}</h2>
+            <h1>{{ group?.groupName }}</h1>
           </ion-label>
         </ion-item>
       </ion-list>

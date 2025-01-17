@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpService } from './http.service';
+import { HttpService } from '../httpService/http.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -29,10 +29,12 @@ export class GroupsService {
       `api/groupExpense/getGroupBalance/${groupId}`
     );
   }
- 
   markAsPaid(data: any): Observable<any> {
     return this.httpService.securedPost(`api/groupExpense/settleBalance`, {
       data,
     });
+  }
+  deleteGroup(groupId: string): Observable<any> {
+    return this.httpService.securedDelete(`api/group/deleteGroup/${groupId}`);
   }
 }

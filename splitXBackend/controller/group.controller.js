@@ -2,10 +2,12 @@ const Group = require("../models/groups.model.js");
 const GroupMember = require("../models/groupMembers.models.js");
 const User = require("../models/user.model.js");
 const Expense = require("../models/groupExpense.models.js");
+const uploadOnCloudinary = require("../utils/cloudinary.utils.js");
 
 const addGroup = async (req, res) => {
   const { groupName } = req.body;
   console.log(req.body);
+  console.log("File: ", req.file);
 
   const userId = req.user._id; // Assuming user is authenticated and user ID is available.
 
@@ -25,7 +27,7 @@ const addGroup = async (req, res) => {
 
     await newGroup.save();
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password -refreshToken");
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
@@ -42,6 +44,16 @@ const addGroup = async (req, res) => {
     const member = await GroupMember.findOne({ name: user.name });
     console.log(member);
     newGroup.members.push(member._id);
+
+    const profileLocalPath = await req.file?.path;
+    console.log("profileLocalPath: ", profileLocalPath);
+
+    if (profileLocalPath) {
+      const profile = await uploadOnCloudinary(profileLocalPath);
+      newGroup.groupProfilePic = profile.url;
+    }
+    console.log("groupProfilePic: ", newGroup.groupProfilePic);
+
     await newGroup.save();
 
     res
@@ -170,7 +182,9 @@ const getAllMember = async (req, res) => {
   }
 
   try {
-    const getMembers = await GroupMember.find({ groupId: groupId });
+    const getMembers = await GroupMember.find({ groupId: groupId }).populate(
+      "name"
+    );
     if (!getMembers || getMembers.length === 0) {
       return res.status(400).json({ message: "No members found" });
     }
@@ -207,7 +221,7 @@ const getGroupDetails = async (req, res) => {
 };
 
 const deleteGroup = async (req, res) => {
-  const { groupId } = req.body;
+  const { groupId } = req.params;
 
   if (!groupId) {
     return res.status(400).json({ message: "GroupId is required" });

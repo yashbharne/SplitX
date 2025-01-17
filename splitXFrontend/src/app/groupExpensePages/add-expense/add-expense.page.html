@@ -47,7 +47,9 @@
       <ion-note slot="end">{{ splitType }}</ion-note>
     </ion-item>
 
-    <ion-button expand="block" (click)="addExpense()">Add Expense</ion-button>
+    <ion-button expand="block" (click)="addExpense()">
+      {{ callFrom === 'editExpense' ? 'Update Expense' : 'Add Expense' }}
+    </ion-button>
   </div>
 
   <!-- Paid By View -->

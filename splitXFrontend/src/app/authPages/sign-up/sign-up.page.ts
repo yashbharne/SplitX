@@ -23,8 +23,8 @@ import { cameraOutline } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { SafeUrl } from '@angular/platform-browser';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { LoaderService } from 'src/app/services/loader.service';
+import { AuthenticationService } from 'src/app/services/authenticationService/authentication.service';
+import { LoaderService } from 'src/app/services/loaderService/loader.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -74,15 +74,6 @@ export class SignUpPage implements OnInit {
 
   ngOnInit() {
     addIcons({ cameraOutline });
-
-    const storedDetails = localStorage.getItem('userDetails');
-    if (storedDetails) {
-      this.userDetails = JSON.parse(storedDetails);
-    } else {
-      this.userDetails = [];
-    }
-    console.log(this.userDetails);
-
     this.signUpForm = new FormGroup({
       fullName: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -107,6 +98,8 @@ export class SignUpPage implements OnInit {
 
       const base64Image = `data:image/jpeg;base64,${image.base64String}`;
 
+      console.log('base64Image: ', base64Image);
+
       this.signUpForm.get('imageUrl')?.setValue(base64Image);
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -120,6 +113,7 @@ export class SignUpPage implements OnInit {
 
       const base64Image = formData.imageUrl.split(',')[1]; // Extract Base64 part
       const file = this.base64ToFile(base64Image, 'profilePic.jpg');
+      console.log('file', file);
 
       const userFormData = new FormData();
       userFormData.append('name', formData.fullName);

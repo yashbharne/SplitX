@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '../authenticationService/authentication.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +16,11 @@ export class UserSignalService {
         this.userPresent.set(true);
         this.user.set(res.user);
         console.log(this.user());
-        
       },
       error: (error) => {
         console.log(error);
       },
     });
-    return this.user()
+    return this.user();
   }
 }

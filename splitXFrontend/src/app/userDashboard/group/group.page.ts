@@ -23,7 +23,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { add, peopleOutline, personAddOutline } from 'ionicons/icons';
-import { GroupsService } from 'src/app/services/groups.service';
+import { GroupsService } from 'src/app/services/groupService/groups.service';
 
 @Component({
   selector: 'app-group',
@@ -62,7 +62,8 @@ export class GroupPage implements OnInit {
   getAllGroups() {
     this.groupService.getGroupsOfUser().subscribe({
       next: (res: any) => {
-        console.log(res);
+        console.log(res.group);
+
         this.listOfGroup = res.group;
       },
       error: (error) => {
@@ -77,8 +78,6 @@ export class GroupPage implements OnInit {
     this.route.navigateByUrl(`/dashboard/splitgroup/${id}`);
   }
   getAvatar(group: { groupName: string }) {
-    console.log(group.groupName);
-
     // Use Unsplash Source API for random nature images
     return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
       group.groupName

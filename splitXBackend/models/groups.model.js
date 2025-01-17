@@ -49,6 +49,9 @@ const groupSchema = mongoose.Schema({
       },
     },
   ],
+  groupProfilePic: {
+    type: String,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

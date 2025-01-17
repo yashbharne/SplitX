@@ -21,8 +21,8 @@ import {
   IonItem,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/services/authentication.service';
-import { UserSignalService } from 'src/app/services/user-signal.service';
+import { AuthenticationService } from 'src/app/services/authenticationService/authentication.service';
+import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
 
 @Component({
   selector: 'app-login',

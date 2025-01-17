@@ -22,10 +22,10 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { GroupsService } from '../services/groups.service';
+import { GroupsService } from '../services/groupService/groups.service';
 import { addIcons } from 'ionicons';
 import { cashOutline, personCircleOutline } from 'ionicons/icons';
-import { UserSignalService } from '../services/user-signal.service';
+import { UserSignalService } from '../services/userSignalService/user-signal.service';
 
 interface settlement {
   creditor: {

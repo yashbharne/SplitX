@@ -29,9 +29,9 @@ import {
   searchOutline,
   starOutline,
 } from 'ionicons/icons';
-import { AuthenticationService } from 'src/app/services/authentication.service';
+import { AuthenticationService } from 'src/app/services/authenticationService/authentication.service';
 import { Router } from '@angular/router';
-import { UserSignalService } from 'src/app/services/user-signal.service';
+import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
 
 @Component({
   selector: 'app-account',
@@ -98,8 +98,6 @@ export class AccountPage implements OnInit {
   ionViewWillEnter() {
     console.log('Method called from account');
     this.userSignal.getUserProfile();
-
-    
   }
   onLogout() {
     this.authenticationService.logout('logout').subscribe({

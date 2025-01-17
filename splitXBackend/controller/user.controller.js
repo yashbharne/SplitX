@@ -36,7 +36,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 const registerUser = async (req, res) => {
   const { name, email, password, phoneNumber } = req.body;
 
-  console.log(req.file);
+  console.log("file", req.file);
   const { countryCode, number } = JSON.parse(phoneNumber);
   console.log(countryCode, number);
 
@@ -74,6 +74,7 @@ const registerUser = async (req, res) => {
   }
 
   const profile = await uploadOnCloudinary(profileLocalPath);
+  console.log(profile);
 
   if (!profile) {
     return res.status(400).json({ message: "Avatar file is required 2" });
@@ -183,8 +184,6 @@ const logoutUser = async (req, res) => {
   }
 };
 const refreshToken = async (req, res) => {
-  
-
   try {
     const { refreshToken } = await req.cookies;
 

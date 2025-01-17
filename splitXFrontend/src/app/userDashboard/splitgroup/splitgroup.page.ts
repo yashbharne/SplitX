@@ -24,9 +24,10 @@ import {
   createOutline,
 } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GroupsService } from 'src/app/services/groups.service';
-import { GroupExpenseService } from 'src/app/services/group-expense.service';
-import { SendingReceivingDataService } from 'src/app/services/sending-receiving-data.service';
+import { GroupsService } from 'src/app/services/groupService/groups.service';
+import { GroupExpenseService } from 'src/app/services/groupExpenseService/group-expense.service';
+import { SendingReceivingDataService } from 'src/app/services/sendingReceivingDataService/sending-receiving-data.service';
+import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
 
 @Component({
   selector: 'app-splitgroup',
@@ -59,15 +60,14 @@ export class SplitgroupPage implements OnInit {
     private routes: ActivatedRoute,
     private group: GroupsService,
     private groupExpense: GroupExpenseService,
-    private sendingReceivingData: SendingReceivingDataService
+    private sendingReceivingData: SendingReceivingDataService,
+    public userSignal: UserSignalService
   ) {}
 
   addmembers: any[] = [];
   groupId: any = '';
   groupDetails: any = {};
   groupMembers: any[] = [];
-  groupMemberProfileImage =
-    'https://static.toiimg.com/thumb/msid-112642305,width-748,height-499,resizemode=4,imgsize-98616/.jpg';
   expenses: any = '';
 
   ngOnInit() {
@@ -142,6 +142,8 @@ export class SplitgroupPage implements OnInit {
           console.log(res);
           this.addmembers = [];
           this.getAllMembers();
+          this.showAddFriends = false;
+          this.newFriend = '';
         },
         error: (error) => {
           console.log(error);
@@ -187,5 +189,11 @@ export class SplitgroupPage implements OnInit {
 
     this.sendingReceivingData.setData(expense, 'editExpense');
     this.router.navigateByUrl(`/add-expense/${this.groupId}`);
+  }
+  getAvatar(name: string) {
+    // Use Unsplash Source API for random nature images
+    return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+      name
+    )}`;
   }
 }

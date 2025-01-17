@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { DashboardLayoutComponent } from './userDashboard/dashboard-layout/dashboard-layout.component';
 import { authGuard } from './Guards/auth.guard';
-import { authenticationGuard } from './Guards/authentication.guard';
+import { checkLoginGuard } from './Guards/check-login.guard';
 
 export const routes: Routes = [
   {
     path: 'home',
+    canActivate: [checkLoginGuard],
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
   },
   {
@@ -15,17 +16,20 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [checkLoginGuard],
     loadComponent: () =>
       import('./authPages/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'sign-up',
+    canActivate: [checkLoginGuard],
     loadComponent: () =>
       import('./authPages/sign-up/sign-up.page').then((m) => m.SignUpPage),
   },
   {
     path: 'dashboard',
     component: DashboardLayoutComponent,
+    canActivate: [authGuard],
 
     children: [
       {
@@ -66,6 +70,7 @@ export const routes: Routes = [
   },
   {
     path: 'create-group',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./userDashboard/create-group/create-group.page').then(
         (m) => m.CreateGroupPage
@@ -73,6 +78,7 @@ export const routes: Routes = [
   },
   {
     path: 'add-expense/:groupId',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./groupExpensePages/add-expense/add-expense.page').then(
         (m) => m.AddExpensePage
@@ -80,11 +86,13 @@ export const routes: Routes = [
   },
   {
     path: 'expense/:expenseId',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./expense/expense.page').then((m) => m.ExpensePage),
   },
   {
     path: 'group-setting/:groupId',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./groupSettingPage/group-setting/group-setting.page').then(
         (m) => m.GroupSettingPage
@@ -92,6 +100,7 @@ export const routes: Routes = [
   },
   {
     path: 'group-balance/:groupId',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./group-balance/group-balance.page').then(
         (m) => m.GroupBalancePage

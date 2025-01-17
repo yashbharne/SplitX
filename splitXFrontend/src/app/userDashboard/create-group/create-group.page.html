@@ -7,6 +7,7 @@
     <ion-buttons slot="end">
       <ion-button
         color="voilet"
+        [disabled]="!createGroupForm.valid"
         (click)="onCreatingGroup()"
         fill="clear"
         shape="round"
@@ -18,44 +19,37 @@
 </ion-header>
 
 <ion-content>
-  <!-- Upload Photo Icon and Group Name Input -->
-  <div
+  <!-- Inline Camera Button and Group Name Input -->
+  <form
+    [formGroup]="createGroupForm"
+    enctype="multipart/form-data"
     style="
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px;
+      gap: 15px;
+      padding: 10px 20px;
       margin-top: 20px;
     "
   >
+    <!-- Camera Button -->
     <ion-button
       (click)="uploadPhoto()"
-      expand="block"
       fill="outline"
-      size="small"
+      shape="round"
+      size="default"
+      [ngClass]="{'uploaded': isPicUploaded}"
     >
       <ion-icon
-        class="ion-padding"
         slot="icon-only"
-        name="camera"
-        style="cursor: pointer"
+        [name]="isPicUploaded ? 'checkmark' : 'camera'"
       ></ion-icon>
     </ion-button>
 
     <!-- Group Name Input -->
-    <!-- <ion-input
-      label="Enter Group Name"
-      class="ion-margin-vertical"
-      [(ngModel)]="groupName"
-      label-placement="floating"
-      fill="solid"
-      placeholder="Enter text"
-    ></ion-input> -->
     <ion-input
-      label="Group Name"
-      label-placement="stacked"
-      placeholder="Enter text"
-      [(ngModel)]="groupName"
+      formControlName="groupName"
+      placeholder="Enter Group Name"
+      style="flex: 1"
     ></ion-input>
-  </div>
+  </form>
 </ion-content>

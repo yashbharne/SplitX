@@ -27,9 +27,9 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { checkmarkOutline } from 'ionicons/icons';
-import { GroupExpenseService } from 'src/app/services/group-expense.service';
-import { GroupsService } from 'src/app/services/groups.service';
-import { SendingReceivingDataService } from 'src/app/services/sending-receiving-data.service';
+import { GroupExpenseService } from 'src/app/services/groupExpenseService/group-expense.service';
+import { GroupsService } from 'src/app/services/groupService/groups.service';
+import { SendingReceivingDataService } from 'src/app/services/sendingReceivingDataService/sending-receiving-data.service';
 
 interface GroupMember {
   _id: string;
@@ -98,6 +98,7 @@ export class AddExpensePage implements OnInit {
     });
 
     this.getAllMembers();
+    this.clearData();
 
     this.expenseData = this.sendingReceivingData.getData();
     this.callFrom = this.sendingReceivingData.callFrom;
@@ -124,6 +125,7 @@ export class AddExpensePage implements OnInit {
 
   goBack() {
     if (this.currentView === 'main') {
+      this.sendingReceivingData.clearData();
       this.router.navigateByUrl(`/dashboard/splitgroup/${this.groupId}`);
     } else {
       this.currentView = 'main';
@@ -197,15 +199,15 @@ export class AddExpensePage implements OnInit {
       expenseId: this.callFrom ? this.expenseData._id : '',
     };
 
-    
     if (this.callFrom) {
       console.log('In Edit Expense');
       console.log('Expense Payload:', expensePayload);
-      
 
       this.groupExpense.updateExpense(expensePayload).subscribe({
         next: (res: any) => {
           console.log(res);
+          // Clear data after successful edit
+          this.sendingReceivingData.clearData();
         },
         error: (error) => {
           console.log(error);
@@ -215,6 +217,7 @@ export class AddExpensePage implements OnInit {
       this.groupExpense.addExpense(expensePayload).subscribe({
         next: (res: any) => {
           console.log('Expense added successfully:', res);
+          this.clearData(); // Clear data after successful add
           this.router.navigateByUrl(`/dashboard/splitgroup/${this.groupId}`);
         },
         error: (error) => {
@@ -222,6 +225,16 @@ export class AddExpensePage implements OnInit {
         },
       });
     }
+  }
+
+  // Method to clear the data after successful API call
+  clearData() {
+    this.description = '';
+    this.amount = null;
+    this.splitType = '';
+    this.isMultiplePayers = false;
+    this.selectedPayer = '';
+    this.groupMembers = [];
   }
 
   getAllMembers() {

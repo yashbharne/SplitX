@@ -15,7 +15,7 @@ import {
   IonButton,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { GroupExpenseService } from '../services/group-expense.service';
+import { GroupExpenseService } from '../services/groupExpenseService/group-expense.service';
 import { addIcons } from 'ionicons';
 import {
   arrowForwardCircleOutline,

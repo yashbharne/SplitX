@@ -1,5 +1,6 @@
 ion-icon {
   font-size: 30px;
+  
 }
 ion-input {
   --highlight-color-focused: #7843db;
@@ -16,4 +17,11 @@ ion-button {
   padding-top: 5px !important;
   color: gray;
   --border-color: #808080;
+}
+ion-button.uploaded {
+  --border-color: green; /* Change border color to green when uploaded */
+}
+
+ion-button.uploaded ion-icon {
+  color: green; /* Change icon color if needed */
 }

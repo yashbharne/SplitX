@@ -2,10 +2,9 @@
   <!-- First Image (Full-Width) -->
   <img
     style="height: 120px; width: 100%; object-fit: cover"
-    src="https://static.toiimg.com/thumb/msid-112642305,width-748,height-499,resizemode=4,imgsize-98616/.jpg"
+    [src]="groupDetails.groupProfilePic ? groupDetails.groupProfilePic : getAvatar(groupDetails?.groupName)"
     alt="First Image"
   />
-
   <!-- Second Image (Overlapping) -->
   <img
     style="
@@ -17,7 +16,7 @@
       border: 3px solid white;
       border-radius: 30%;
     "
-    src="https://static.toiimg.com/thumb/msid-112642305,width-748,height-499,resizemode=4,imgsize-98616/.jpg"
+    [src]="groupDetails.groupProfilePic ? groupDetails.groupProfilePic : getAvatar(groupDetails?.groupName)"
     alt="Second Image"
   />
 
@@ -30,7 +29,6 @@
       top: 30px;
       right: 10px;
       font-size: 24px;
-      color: white;
       cursor: pointer;
     "
   ></ion-icon>
@@ -40,7 +38,6 @@
       top: 30px;
       left: 10px;
       font-size: 24px;
-      color: white;
       cursor: pointer;
     "
     (click)="onBack()"
@@ -59,7 +56,7 @@
     "
   >
     <ion-label class="ion-margin-vertical"
-      >{{ groupDetails?.groupName?.toUpperCase() }}</ion-label
+      ><h1>{{ groupDetails?.groupName?.toUpperCase() }}</h1></ion-label
     >
   </div>
   <div *ngIf="groupMembers.length === 1">
@@ -81,11 +78,15 @@
         style="margin-left: -10px"
       >
         <img
-          src="{{groupMemberProfileImage}}"
+          [src]="
+            member.name === userSignal.user()?.name.toLowerCase()
+              ? userSignal.user()?.profilePic
+              : getAvatar(member.name)
+          "
           alt="Profile {{ i + 1 }}"
           style="
-            height: 30px;
-            width: 30px;
+            height: 40px;
+            width: 40px;
             border-radius: 50%;
             border: 2px solid white;
             object-fit: cover;
@@ -181,6 +182,7 @@
       >
     </div>
   </div>
+  <!-- Calculate Balance Button -->
   <div class="center-button">
     <ion-buttons>
       <ion-button (click)="onCalculateBalance()">
@@ -188,6 +190,7 @@
       </ion-button>
     </ion-buttons>
   </div>
+
   <div style="padding: 20px; margin-top: 20px">
     <h3>Expenses</h3>
     <div
@@ -256,9 +259,13 @@
     "
   >
     <ion-icon
-      class="ion-margin-end"
       name="receipt-outline"
-      style="font-size: 22px; margin-right: 10px"
+      style="
+        font-size: 22px;
+        margin-right: 10px;
+        border-radius: 0%;
+        background-color: #7843db;
+      "
     ></ion-icon>
   </ion-button>
 </ion-content>
