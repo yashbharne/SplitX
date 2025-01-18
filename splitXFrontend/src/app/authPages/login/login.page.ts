@@ -23,6 +23,7 @@ import {
 import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/services/authenticationService/authentication.service';
 import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
+import { ToastService } from 'src/app/services/toastService/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -47,7 +48,8 @@ export class LoginPage implements OnInit {
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
-    private userSignal: UserSignalService
+    private userSignal: UserSignalService,
+    private toast: ToastService
   ) {}
   loginForm!: FormGroup;
   userDetails: any[] = [];
@@ -75,6 +77,12 @@ export class LoginPage implements OnInit {
         },
         error: (error) => {
           console.log(error);
+          this.toast.presentToastWithOptions({
+            message: error.error.message,
+            duration: 3000,
+            color: 'danger',
+            position: 'bottom',
+          });
         },
       });
     }

@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        [defaultHref]="'/dashboard/splitgroup/'+groupId"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add Friends to Group</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="add-friends-card">
+    <ion-card-header>
+      <ion-card-title>Add Friends</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Friend Name</ion-label>
+        <ion-input  [(ngModel)]="friendName"></ion-input>
+      </ion-item>
+      <ion-button expand="block" color="tertiary" (click)="addFriend()">
+        Add Friend
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="friends.length > 0" class="friends-list-card">
+    <ion-card-header>
+      <ion-card-title>Friends List</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let friend of friends; let i = index">
+          <ion-label>{{ friend }}</ion-label>
+          <ion-icon
+            name="close-circle"
+            slot="end"
+            color="danger"
+            (click)="removeFriend(i)"
+          ></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button
+    expand="block"
+    color="tertiary"
+    [disabled]="friends.length === 0"
+    (click)="submitFriends()"
+  >
+    Submit
+  </ion-button>
+</ion-content>

@@ -59,22 +59,11 @@
       ><h1>{{ groupDetails?.groupName?.toUpperCase() }}</h1></ion-label
     >
   </div>
-  <div *ngIf="groupMembers.length === 1">
-    <ion-button
-      (click)="toggleAddFriendBar()"
-      expand="block"
-      fill="clear"
-      shape="round"
-      color="voilet"
-    >
-      Add Members
-    </ion-button>
-  </div>
-
+ 
   <div style="display: flex; align-items: center; padding: 20px; gap: 10px">
     <div style="display: flex; position: relative; margin-left: 40px">
       <div
-        *ngFor="let member of groupMembers; let i = index"
+        *ngFor="let member of groupMembers.slice(0, 5); let i = index"
         style="margin-left: -10px"
       >
         <img
@@ -94,10 +83,12 @@
         />
       </div>
     </div>
-
+    <span *ngIf="groupMembers.length > 5" style="font-size: 25px; color: gray">
+      ....
+    </span>
     <button
-      *ngIf="groupMembers.length > 1"
-      (click)="toggleAddFriendBar()"
+      
+      (click)="router.navigateByUrl('/add-friends/'+groupId)"
       style="
         height: 30px;
         width: 30px;
@@ -116,72 +107,6 @@
     </button>
   </div>
 
-  <!-- Add Friends Section -->
-  <div *ngIf="showAddFriends" style="padding: 20px">
-    <ion-item>
-      <ion-label position="floating">Add a Friend</ion-label>
-      <ion-input
-        style="margin-top: 5px"
-        type="text"
-        name="friend"
-        [(ngModel)]="newFriend"
-      ></ion-input>
-    </ion-item>
-    <div style="display: flex; gap: 10px; margin-top: 10px">
-      <ion-button color="tertiary" (click)="addMember()"
-        ><i class="fa-solid fa-user-plus"></i
-      ></ion-button>
-
-      <ion-button color="tertiary" (click)="showAddedMembers()"
-        >View</ion-button
-      >
-      <ion-button color="tertiary" (click)="submitAddedFriends()"
-        >Submit</ion-button
-      >
-      <ion-button color="tertiary" (click)="cancelAddFriendBar()"
-        ><i class="fa-solid fa-xmark"></i
-      ></ion-button>
-    </div>
-  </div>
-
-  <!-- Display Added People -->
-  <div
-    *ngIf="showMembersList"
-    style="
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 20px;
-    "
-  >
-    <div
-      *ngFor="let member of addmembers; let i = index"
-      style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-      "
-    >
-      <span>{{ member }}</span>
-      <ion-icon
-        name="close-circle"
-        color="danger"
-        style="cursor: pointer"
-        (click)="removeMember(i)"
-      ></ion-icon>
-    </div>
-    <div>
-      <ion-button
-        color="tertiary"
-        (click)="showAddFriends = true;
-    showMembersList = false;"
-      >
-        Back</ion-button
-      >
-    </div>
-  </div>
   <!-- Calculate Balance Button -->
   <div class="center-button">
     <ion-buttons>

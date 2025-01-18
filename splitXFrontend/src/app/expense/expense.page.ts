@@ -14,7 +14,7 @@ import {
   IonAvatar,
   IonButton,
 } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GroupExpenseService } from '../services/groupExpenseService/group-expense.service';
 import { addIcons } from 'ionicons';
 import {
@@ -24,6 +24,7 @@ import {
   trashBinOutline,
   walletOutline,
 } from 'ionicons/icons';
+import { ToastService } from '../services/toastService/toast.service';
 
 @Component({
   selector: 'app-expense',
@@ -51,7 +52,9 @@ import {
 export class ExpensePage implements OnInit {
   constructor(
     private routes: ActivatedRoute,
-    private groupExpense: GroupExpenseService
+    private groupExpense: GroupExpenseService,
+    private toast: ToastService,
+    private router: Router
   ) {
     this.expenseDate = new Date(
       this.expenseData.createdAt
@@ -74,11 +77,13 @@ export class ExpensePage implements OnInit {
   expenseId: string = '';
   expenseDate: string = '';
   expenseData: any = {};
+  groupId: string = '';
 
   getExpense() {
     this.groupExpense.getExpense(this.expenseId).subscribe({
       next: (res) => {
         this.expenseData = res;
+        this.groupId = res.groupId;
       },
       error: (error) => {
         console.log(error);
@@ -88,10 +93,22 @@ export class ExpensePage implements OnInit {
   onDeleteExpense() {
     this.groupExpense.deleteExpense(this.expenseId).subscribe({
       next: (res: any) => {
-        console.log(res);
+        this.toast.presentToastWithOptions({
+          message: res.message,
+          duration: 3000,
+          color: 'success',
+          position: 'bottom',
+        });
+        this.router.navigateByUrl('/dashboard/splitgroup/' + this.groupId);
       },
       error: (error) => {
         console.log(error);
+        this.toast.presentToastWithOptions({
+          message: error.error.message,
+          duration: 3000,
+          color: 'danger',
+          position: 'bottom',
+        });
       },
     });
   }

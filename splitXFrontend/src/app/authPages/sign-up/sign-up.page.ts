@@ -26,6 +26,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { AuthenticationService } from 'src/app/services/authenticationService/authentication.service';
 import { LoaderService } from 'src/app/services/loaderService/loader.service';
 import { Router } from '@angular/router';
+import { ToastService } from 'src/app/services/toastService/toast.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -55,8 +56,8 @@ export class SignUpPage implements OnInit {
   imageUrl!: SafeUrl;
   constructor(
     private authenticationService: AuthenticationService,
-    private loaderService: LoaderService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {
     addIcons({ cameraOutline });
   }
@@ -107,7 +108,6 @@ export class SignUpPage implements OnInit {
   }
 
   onSubmit() {
-    this.loaderService.showLoader('Please Wait');
     if (this.signUpForm.valid) {
       const formData = this.signUpForm.value;
 
@@ -132,11 +132,23 @@ export class SignUpPage implements OnInit {
         next: (res: any) => {
           console.log('User Registered:', res);
           this.signUpForm.reset();
-          this.loaderService.hideLoader();
+          this.toast.presentToastWithOptions({
+            message: res.message,
+            duration: 3000,
+            color: 'success',
+            position: 'bottom',
+          });
+
           this.router.navigateByUrl('/login');
         },
         error: (error) => {
           console.error('Registration Error:', error);
+          this.toast.presentToastWithOptions({
+            message: error.error.message,
+            duration: 3000,
+            color: 'danger',
+            position: 'bottom',
+          });
         },
       });
     }

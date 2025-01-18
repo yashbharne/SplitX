@@ -40,7 +40,6 @@ import { GroupsService } from 'src/app/services/groupService/groups.service';
     IonTitle,
     IonIcon,
     IonItem,
-
     IonButton,
     IonContent,
     IonLabel,
@@ -63,7 +62,6 @@ export class GroupPage implements OnInit {
     this.groupService.getGroupsOfUser().subscribe({
       next: (res: any) => {
         console.log(res.group);
-
         this.listOfGroup = res.group;
       },
       error: (error) => {

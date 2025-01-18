@@ -1,0 +1,39 @@
+.add-friends-card,
+.friends-list-card {
+  margin: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-header {
+  background: linear-gradient(to right, #7843db, #9c77e0);
+  color: white;
+  border-radius: 10px 10px 0 0;
+}
+
+ion-card-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+ion-item {
+  --border-color: #7843db;
+  --background: #f9f9f9;
+  margin: 0.5rem 0;
+}
+
+ion-button {
+  --border-radius: 20px;
+  margin: 0.5rem;
+}
+
+ion-icon {
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+ion-input {
+  --highlight-color-focused: #7843db;
+  --highlight-color-valid: #7843db; /* Highlight color when valid */
+  margin-top: 7px;
+}

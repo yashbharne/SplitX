@@ -24,13 +24,15 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
+  create,
   createOutline,
   exitOutline,
   linkOutline,
+  pencilOutline,
   personAddOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GroupsService } from 'src/app/services/groupService/groups.service';
 import { UserSignalService } from 'src/app/services/userSignalService/user-signal.service';
 import { GenerateAvatarService } from 'src/app/services/generateAvtar/generate-avatar.service';
@@ -72,7 +74,8 @@ export class GroupSettingPage implements OnInit {
     private navCtrl: NavController,
     private routes: ActivatedRoute,
     private groupService: GroupsService,
-    public userSignal: UserSignalService
+    public userSignal: UserSignalService,
+    public router: Router
   ) {
     addIcons({ createOutline, exitOutline, trashOutline });
   }
@@ -83,6 +86,7 @@ export class GroupSettingPage implements OnInit {
       exitOutline,
       linkOutline,
       personAddOutline,
+      create,
     });
     this.routes.params.subscribe((params) => {
       this.groupId = params['groupId'];

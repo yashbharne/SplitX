@@ -106,4 +106,10 @@ export const routes: Routes = [
         (m) => m.GroupBalancePage
       ),
   },
+  {
+    path: 'add-friends/:groupId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./add-friends/add-friends.page').then((m) => m.AddFriendsPage),
+  },
 ];

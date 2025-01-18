@@ -14,7 +14,8 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment.prod';
 import { enableProdMode } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { loadingInterceptor } from './app/interceptor/loading.interceptor';
 pwaCameraElements(window);
 if (environment.production) {
   enableProdMode();
@@ -25,5 +26,6 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
+    provideHttpClient(withInterceptors([loadingInterceptor])),
   ],
 });

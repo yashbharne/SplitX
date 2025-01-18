@@ -38,7 +38,7 @@ import { UserSignalService } from 'src/app/services/userSignalService/user-signa
     IonButtons,
     IonListHeader,
     IonList,
-    IonInput,
+
     IonItem,
     IonButton,
     IonLabel,
@@ -50,13 +50,11 @@ import { UserSignalService } from 'src/app/services/userSignalService/user-signa
   ],
 })
 export class SplitgroupPage implements OnInit {
-  toggleAddFriends() {
-    throw new Error('Method not implemented.');
-  }
+
   showAddFriends: boolean = false;
   newFriends: string = '';
   constructor(
-    private router: Router,
+    public router: Router,
     private routes: ActivatedRoute,
     private group: GroupsService,
     private groupExpense: GroupExpenseService,
@@ -64,7 +62,7 @@ export class SplitgroupPage implements OnInit {
     public userSignal: UserSignalService
   ) {}
 
-  addmembers: any[] = [];
+ 
   groupId: any = '';
   groupDetails: any = {};
   groupMembers: any[] = [];
@@ -103,52 +101,6 @@ export class SplitgroupPage implements OnInit {
         console.log(error);
       },
     });
-  }
-
-  showMembersList = false;
-  newFriend = '';
-
-  toggleAddFriendBar() {
-    this.showAddFriends = !this.showAddFriends;
-    this.showMembersList = false;
-  }
-
-  cancelAddFriendBar() {
-    this.showAddFriends = false;
-    this.newFriend = '';
-  }
-
-  addMember() {
-    if (this.newFriend.trim()) {
-      this.addmembers.push(this.newFriend.trim());
-      this.newFriend = '';
-    }
-  }
-
-  showAddedMembers() {
-    this.showAddFriends = false;
-    this.showMembersList = true;
-  }
-
-  removeMember(index: number) {
-    this.addmembers.splice(index, 1);
-  }
-  submitAddedFriends() {
-    console.log(this.addmembers);
-    this.group
-      .addMember({ groupId: this.groupId, member: this.addmembers })
-      .subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.addmembers = [];
-          this.getAllMembers();
-          this.showAddFriends = false;
-          this.newFriend = '';
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
   }
   getAllMembers() {
     this.group.getAllMember({ groupId: this.groupId }).subscribe({
