@@ -15,10 +15,10 @@ export class UserSignalService {
       next: (res) => {
         this.userPresent.set(true);
         this.user.set(res.user);
-        console.log(this.user());
+     
       },
       error: (error) => {
-        console.log(error);
+        
       },
     });
     return this.user();

@@ -14,7 +14,7 @@ const Port = process.env.PORT;
 app.use(
   cors({
     origin: "http://localhost:8100",
-    methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
@@ -25,9 +25,11 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 const UserRouter = require("./routes/user.route.js");
 const GroupRouter = require("./routes/group.route.js");
 const ExpenseRouter = require("./routes/groupExpense.route.js");
+const FriendsRouter = require("./routes/friends.route.js");
 app.use("/api/user", UserRouter);
 app.use("/api/group", GroupRouter);
 app.use("/api/groupExpense", ExpenseRouter);
+app.use("/api/friends", FriendsRouter);
 
 const startServer = async () => {
   try {

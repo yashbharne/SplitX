@@ -28,7 +28,7 @@
         >Friends</ion-label
       >
     </div>
-    <div class="footer-inner" (click)="directToPage('activity')">
+    <!-- <div class="footer-inner" (click)="directToPage('activity')">
       <ion-icon
         name="clipboard-outline"
         [ngClass]="{ 'active-icon': activeRoute === 'activity' }"
@@ -36,7 +36,7 @@
       <ion-label [ngClass]="{ 'active-label': activeRoute === 'activity' }"
         >Activity</ion-label
       >
-    </div>
+    </div> -->
     <div class="footer-inner" (click)="directToPage('account')">
       <img
         [src]="userSignal.user()?.profilePic"

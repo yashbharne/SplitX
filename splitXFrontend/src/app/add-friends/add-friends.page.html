@@ -17,8 +17,19 @@
     <ion-card-content>
       <ion-item>
         <ion-label position="floating">Friend Name</ion-label>
-        <ion-input  [(ngModel)]="friendName"></ion-input>
+        <ion-input
+          [(ngModel)]="friendName"
+          (ionInput)="onInputChange()"
+        ></ion-input>
       </ion-item>
+      <ion-list *ngIf="showSuggestion">
+        <ion-item
+          *ngFor="let suggestion of suggestionFriend"
+          (click)="selectSuggestion(suggestion)"
+        >
+          {{ suggestion }}
+        </ion-item>
+      </ion-list>
       <ion-button expand="block" color="tertiary" (click)="addFriend()">
         Add Friend
       </ion-button>

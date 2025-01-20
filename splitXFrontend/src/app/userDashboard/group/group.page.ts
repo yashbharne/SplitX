@@ -61,12 +61,9 @@ export class GroupPage implements OnInit {
   getAllGroups() {
     this.groupService.getGroupsOfUser().subscribe({
       next: (res: any) => {
-        console.log(res.group);
         this.listOfGroup = res.group;
       },
-      error: (error) => {
-        console.log(error);
-      },
+      error: (error) => {},
     });
   }
   createGroup() {

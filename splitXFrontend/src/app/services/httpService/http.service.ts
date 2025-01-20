@@ -4,8 +4,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Method } from 'ionicons/dist/types/stencil-public-runtime';
-import { body } from 'ionicons/icons';
+
 import { Observable, throwError } from 'rxjs';
 
 @Injectable({
@@ -24,13 +23,13 @@ export class HttpService {
 
   private getHeaders(callFrom?: string): HttpHeaders {
     if (callFrom === 'logout') {
-      console.log(callFrom);
+
 
       const token = localStorage.getItem('refresh-token');
       return new HttpHeaders().set('Authorization', `Bearer ${token}`);
     }
     const token = localStorage.getItem('access-token');
-    console.log(token);
+   
 
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
@@ -44,7 +43,7 @@ export class HttpService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<any> {
-    console.log(error);
+ 
 
     if (error.status === 401) {
       return new Observable((observer) => {
@@ -83,7 +82,7 @@ export class HttpService {
   }
 
   post(url: string, data: any, callFrom?: string): Observable<any> {
-    console.log('In http Post');
+ 
 
     return this.http.post(`${this.httpUri}/${url}`, data, {
       headers: this.getHeaders(callFrom),
@@ -125,13 +124,13 @@ export class HttpService {
         })
         .subscribe({
           next: (res) => {
-            console.log(res);
+            
 
             observer.next(res);
           },
           error: (err) => {
             this.handleError(err).subscribe(observer);
-            console.log(err);
+           
           },
           complete: () => observer.complete(),
         });

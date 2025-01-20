@@ -1,0 +1,7 @@
+
+# Directory for local npm modules
+node_modules/
+
+
+#environment variables
+.env

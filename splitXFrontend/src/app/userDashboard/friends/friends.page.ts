@@ -11,14 +11,18 @@ import {
   IonContent,
   IonLabel,
   IonFab,
-  IonFabButton,
-  IonFooter,
   IonList,
   IonItem,
   IonAvatar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personAddOutline, receiptOutline, search } from 'ionicons/icons';
+import {
+  personAddOutline,
+  personCircle,
+  receiptOutline,
+  search,
+} from 'ionicons/icons';
+import { FriendsService } from 'src/app/services/FriendsService/friends.service';
 
 @Component({
   selector: 'app-friends',
@@ -27,11 +31,10 @@ import { personAddOutline, receiptOutline, search } from 'ionicons/icons';
   standalone: true,
   imports: [
     IonAvatar,
+
     IonItem,
     IonList,
- 
-    IonFabButton,
-    IonFab,
+
     IonLabel,
     IonContent,
     IonButtons,
@@ -45,15 +48,24 @@ import { personAddOutline, receiptOutline, search } from 'ionicons/icons';
   ],
 })
 export class FriendsPage implements OnInit {
-  constructor() {}
+  constructor(private friendService: FriendsService) {}
   friends: any[] = [];
   clearFilter() {}
   addExpense() {}
-  addFriends() {
-    this.friends.push('kalsh', 'Aditya');
-  }
 
   ngOnInit() {
-    addIcons({ personAddOutline, search, receiptOutline });
+    addIcons({ personCircle, search, receiptOutline });
+    this.getFriends();
+  }
+
+  getFriends() {
+    this.friendService.getAllFriendsOfUser().subscribe({
+      next: (res: any) => {
+        this.friends = res.filteredMembers;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
   }
 }

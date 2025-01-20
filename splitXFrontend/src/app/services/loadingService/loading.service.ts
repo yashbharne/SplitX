@@ -14,8 +14,7 @@ export class LoadingService {
 
   async showLoader(message: string = 'Please wait...') {
     this.requestsInProgress++;
-    console.log('Show loader. Requests in progress:', this.requestsInProgress);
-
+   
     // Delay showing the loader to avoid flickering
     if (!this.loader && !this.loaderTimeout) {
       this.loaderTimeout = setTimeout(async () => {
@@ -34,8 +33,7 @@ export class LoadingService {
       this.requestsInProgress--;
     }
 
-    console.log('Hide loader. Requests in progress:', this.requestsInProgress);
-
+   
     if (this.requestsInProgress === 0) {
       clearTimeout(this.loaderTimeout); // Clear timeout if loader not yet shown
       this.loaderTimeout = null;

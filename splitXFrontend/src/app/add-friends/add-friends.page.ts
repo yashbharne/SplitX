@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import {
   IonTitle,
@@ -24,6 +24,7 @@ import {
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { GroupsService } from '../services/groupService/groups.service';
+import { FriendsService } from '../services/FriendsService/friends.service';
 
 @Component({
   selector: 'app-add-friends',
@@ -55,18 +56,24 @@ export class AddFriendsPage implements OnInit {
   friendName: string = '';
   friends: string[] = [];
   groupId: string = '';
+  alreadyFriendsOfUser: string[] = [];
+  suggestionFriend: string[] = [];
+  showSuggestion: boolean = false;
 
   constructor(
     private alertController: AlertController,
     private toastController: ToastController,
     private routes: ActivatedRoute,
-    private group: GroupsService
+    private group: GroupsService,
+    private friendsService: FriendsService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     addIcons({ closeCircle });
     this.routes.params.subscribe(
       (params) => (this.groupId = params['groupId'])
     );
+    this.getFriendsOfUser();
   }
 
   addFriend() {
@@ -114,6 +121,7 @@ export class AddFriendsPage implements OnInit {
           console.log(res);
           this.showToast('Friends submitted successfully!', 'success');
           this.friends = [];
+          this.router.navigateByUrl(`/dashboard/splitgroup/${this.groupId}`);
         },
         error: (error) => {
           console.log(error);
@@ -128,5 +136,31 @@ export class AddFriendsPage implements OnInit {
       color,
     });
     toast.present();
+  }
+
+  getFriendsOfUser() {
+    this.friendsService.getAllFriendsOfUser().subscribe({
+      next: (res: any) => {
+        console.log(res.filteredMembers);
+        this.alreadyFriendsOfUser = res.filteredMembers;
+      },
+    });
+  }
+  onInputChange() {
+    this.suggestionFriend = [];
+    this.showSuggestion = false;
+
+    if (this.friendName.trim() !== '') {
+      this.showSuggestion = true;
+      const result = this.alreadyFriendsOfUser.filter((name) =>
+        name.startsWith(this.friendName.toLocaleLowerCase())
+      );
+      this.suggestionFriend = result;
+    }
+  }
+  selectSuggestion(friend: string) {
+    this.friendName = friend;
+    this.suggestionFriend = [];
+    this.showSuggestion = false;
   }
 }
